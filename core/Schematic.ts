@@ -8,6 +8,7 @@ import { Component } from './Component';
 import { Node, createGroundNode } from './Node';
 import { Pin } from './Pin';
 import { ComponentType } from './types';
+import type { ERCResult, ERCOptions } from './erc';
 
 export interface SchematicValidationResult {
   valid: boolean;
@@ -324,6 +325,26 @@ export class Schematic {
       }
     }
   }
+
+  /**
+   * Run Electrical Rule Check (ERC) on this schematic.
+   * Returns detailed violations with severity levels.
+   *
+   * @example
+   * const result = myCircuit.erc();
+   * if (!result.passed) console.log(result.summary());
+   */
+  erc(options?: ERCOptions): ERCResult {
+    if (!Schematic._ercRunner) {
+      throw new Error(
+        'ERC engine not registered. Import "wirelang/erc" or call registerERC() first.',
+      );
+    }
+    return Schematic._ercRunner(this, options);
+  }
+
+  /** @internal Injected by erc.ts to break circular dependency */
+  static _ercRunner: ((s: Schematic, o?: ERCOptions) => ERCResult) | null = null;
 
   toString(): string {
     return `Schematic(${this.name}, ${this._components.length} components, ${this._nodes.length} nodes)`;
