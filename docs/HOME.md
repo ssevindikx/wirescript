@@ -1,17 +1,59 @@
-# WireLang — Home
+# WireLang Documentation
 
-This document is the single-entry home page for the WireLang documentation. It provides a concise feature table and links to detailed pages for each area.
+WireLang is a **code-first DSL** for describing electronic circuits in TypeScript.  
+Its only job: *"which pin is connected to which node, and what is this component's physical parameter."*
 
-| Area | Short Description | Link |
-|------|-------------------|------|
-| Overview & Quick Start | Project purpose, install & run commands | [Overview](./API.md#quick-start) |
-| Components | Passive components, diodes, LEDs, transistors, op-amps, logic gates | [Components](./components.md) |
-| Op-Amps | Detailed op-amp models and usage (5-pin / 3-pin) | [Op-Amps](./op-amps.md) |
-| Sources | Voltage & current sources (DC/AC), power rails | [Sources](./sources.md) |
-| Passives | Resistors, capacitors, inductors and unit helpers | [Passives](./passives.md) |
-| Logic Gates | Digital gates, inputs (HIGH/LOW), clock | [Logic Gates](./logic-gates.md) |
-| Units | `kOhm`, `uF`, `mH`, `kHz` helpers and examples | [Units](./units.md) |
-| API Reference | Circuit creation, Schematic methods, helpers | [API](./api.md) |
-| Examples | Ready-to-run examples and how to run them | [Examples](./examples.md) |
+---
 
-If you want one focused page added (for example a full component-by-component reference), request it and I will add it under `docs/` and link it here.
+## Table of Contents
+
+| Guide | Description |
+|---|---|
+| [Getting Started](./getting-started.md) | Install, quick start, two API styles |
+| [DSL API](./api-dsl.md) | Simplified declarative syntax — `Circuit`, `Series`, `Parallel` |
+| [TypeScript API](./api-typescript.md) | Full imperative API — `createSchematic`, manual node/pin wiring |
+| [Components](./components.md) | Every built-in component with parameters and examples |
+| [Units](./units.md) | SI prefix helpers — `kOhm`, `uF`, `MHz`, etc. |
+| [ERC](./erc.md) | Electrical Rule Check — physics-based static validation |
+| [Serialization](./serialization.md) | DB layer, JSON IR, DSL ↔ DB round-trip |
+| [CLI](./cli.md) | Command-line interface reference |
+| [Examples](./examples.md) | Ready-to-run circuit examples |
+
+---
+
+## Two API Styles
+
+WireLang offers two equivalent ways to describe circuits:
+
+### 1. DSL API *(recommended)*
+Declarative, concise. Best for most use cases.
+
+```ts
+import { Circuit, DC, R, LED, GND, RED } from 'wirelang';
+
+const circuit = Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
+```
+
+### 2. TypeScript API *(full control)*
+Imperative, explicit node/pin management. Best for complex topologies.
+
+```ts
+import { createSchematic, DC, R, LED, GND, RED } from 'wirelang';
+
+const s = createSchematic('LED Driver');
+const src = DC(5), r = R(330), led = LED(RED), gnd = GND();
+
+s.addComponents(src, r, led, gnd);
+
+const n1 = s.createNode('net1');
+const n2 = s.createNode('net2');
+
+s.connect(src.positive, n1);
+s.connect(r.p1, n1);
+s.connect(r.p2, n2);
+s.connect(led.anode, n2);
+s.connect(led.cathode, gnd.getGroundNode());
+s.connect(src.negative, gnd.getGroundNode());
+```
+
+Both produce identical internal representations.

@@ -1,61 +1,90 @@
 # WireLang
 
-A code-first domain-specific language (DSL) for describing electronic circuits.
+A **code-first DSL** for describing electronic circuits in TypeScript.
 
-This project focuses on:
+> ⚠️ Early experimental stage — API may change before stable release.
 
-## Status
-⚠️ Early experimental stage.
+---
 
-Core graph model and DSL runtime are under active development.
-No simulation or PCB support yet.
+## Install
 
-## Example
-
-```ts
-mcu = MCU("ATmega8")
-
-circuit = Series(
-  DC(5),
-  mcu.PB5,
-  LED(RED),
-)
+```sh
+npm install wirelang
 ```
 
-  Quick start
-  -----------
+## Quick Start
 
-  Install dependencies, build, run examples and tests:
+```ts
+import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirelang';
 
-  ```bash
-  npm install
-  npm run build
-  npm run example
-  npm run test
-  ```
+// Describe the circuit
+const circuit = Circuit('LED Driver',
+  DC(5),     // 5 V source
+  R(330),    // 330 Ω current-limiting resistor
+  LED(RED),  // Red LED
+  GND()      // Ground reference
+);
 
-  Documentation
-  -------------
+// Validate
+const erc = runERC(circuit);
+console.log(erc.summary()); // ✅ ERC passed — no violations found.
 
-  The canonical documentation lives in the `docs/` folder. Start at the HOME page:
+// Inspect
+console.log(circuit.getSummary());
+```
 
-  - [Home](docs/HOME.md) — consolidated home page with a feature table and links to detailed pages (components, API, examples).
+For multi-pin components (transistors, op-amps):
 
-  Examples & usage
-  -----------------
+```ts
+const t = NPN('2N2222');
 
-  - See `playground.ts` and `core/examples.ts` for runnable examples (LED circuits, op-amp examples, logic gate samples, rectifiers).
-  - Run `npm run example` to execute and print summaries for the included examples.
+Circuit('BJT Switch', [
+  [DC(5), R(kOhm(1)), LED(RED), t.C],
+  [t.E, GND()],
+  [DC(5), R(kOhm(10)), t.B],
+]);
+```
 
-  Contributing
-  ------------
+---
 
-  - Add new components under `core/components` and export them from `core/components/index.ts`.
-  - Keep examples in `core/examples.ts` or add new example functions and register them in `run-examples.js`.
+## Documentation
 
-  Contact
-  -------
+| Guide | Description |
+|---|---|
+| [Getting Started](./docs/getting-started.md) | Install, quick start, two API styles |
+| [DSL API](./docs/api-dsl.md) | Declarative syntax — `Circuit`, `Series`, `Parallel` |
+| [TypeScript API](./docs/api-typescript.md) | Imperative API — `createSchematic`, manual wiring |
+| [Components](./docs/components.md) | All built-in components with parameters |
+| [Units](./docs/units.md) | SI prefix helpers — `kOhm`, `uF`, `MHz`, … |
+| [ERC](./docs/erc.md) | Electrical Rule Check — physics-based validation |
+| [Serialization](./docs/serialization.md) | JSON IR, DSL ↔ DB round-trip |
+| [CLI](./docs/cli.md) | Command-line interface |
+| [Examples](./docs/examples.md) | 12 ready-to-run circuit examples |
 
-  Project repository: https://github.com/ssevindik/wirelang
+---
 
-  For more details and the full API reference open: `docs/HOME.md`.
+## Features
+
+- **DSL API** — Declarative `Circuit`, `Series`, `Parallel` functions
+- **TypeScript API** — Full `Schematic` / `Node` / `Pin` model
+- **12 ERC rules** — Short circuit, polarity, fan-out, floating inputs, and more
+- **Component library** — Resistors, capacitors, inductors, diodes, LEDs, BJTs, MOSFETs, op-amps, logic gates
+- **SI unit helpers** — `kOhm`, `uF`, `mH`, `kHz`, `mA`, …
+- **JSON serialization** — Save/load circuits as `wirelang-db@v1` JSON
+- **CLI** — `wirelang compile` / `wirelang decompile`
+- **163 tests** passing
+
+---
+
+## Run examples
+
+```sh
+npm install
+npm run example
+```
+
+---
+
+## License
+
+Proprietary — © Samet Sevindik. See [LICENSE](./LICENSE).
