@@ -132,3 +132,13 @@ export {
   type Connectable,
   type CircuitOptions,
 } from './dsl';
+
+// Electrical Rule Check (ERC)
+export {
+  runERC,
+  ERCResult,
+  type ERCViolation,
+  type ERCSeverity,
+  type ERCOptions,
+  type ERCRuleSet,
+} from './erc';
