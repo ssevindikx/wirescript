@@ -12,7 +12,7 @@ createSchematic(name?: string): Schematic
 ```
 
 ```ts
-import { createSchematic } from 'wirelang';
+import { createSchematic } from 'wirescript';
 
 const s = createSchematic('My Circuit');
 ```
@@ -71,7 +71,7 @@ const result = s.validate();
 ### ERC
 
 ```ts
-// Requires 'wirelang/erc' to have been imported at least once
+// Requires 'wirescript/erc' to have been imported at least once
 const result = s.erc();
 const result = s.erc({ fanOutLimit: 4, rules: { floatingInput: false } });
 ```
@@ -138,7 +138,7 @@ pin.disconnect()                      // Remove connection
 ## `Node` — Electrical net
 
 ```ts
-import { Node, createGroundNode } from 'wirelang';
+import { Node, createGroundNode } from 'wirescript';
 
 const n = new Node()                  // Anonymous node
 const n = new Node('VCC')            // Named node
@@ -157,7 +157,7 @@ node.toString()                       // 'Node(VCC)' or 'GND'
 Preserve stable IDs across serialization round-trips:
 
 ```ts
-import { applyComponentIdentity, applyNodeIdentity, applyPinIdentity } from 'wirelang';
+import { applyComponentIdentity, applyNodeIdentity, applyPinIdentity } from 'wirescript';
 
 applyComponentIdentity(component, {
   id: 'resistor_1',
@@ -174,7 +174,7 @@ applyPinIdentity(pin, 'pin_9');
 ## Full example — Bridge Rectifier (TypeScript API)
 
 ```ts
-import { createSchematic, AC, D, R, C, GND } from 'wirelang';
+import { createSchematic, AC, D, R, C, GND } from 'wirescript';
 
 const s = createSchematic('Full-Wave Rectifier');
 

@@ -1,5 +1,5 @@
 /**
- * WireLang Core - LED Component
+ * WireScript Core - LED Component
  */
 
 import { PolarizedTwoTerminalComponent } from '../Component';

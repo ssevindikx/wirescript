@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Voltage Source Component
+ * WireScript Core - Voltage Source Component
  */
 
 import { Component } from '../Component';

@@ -1,5 +1,5 @@
 /**
- * WireLang ERC — Electrical Rule Check
+ * WireScript ERC — Electrical Rule Check
  *
  * Statically validates circuit topology and electrical constraints
  * without requiring full SPICE simulation.
@@ -10,7 +10,7 @@
  *   INFO    — design quality observation
  *
  * Usage:
- *   import { runERC } from 'wirelang';
+ *   import { runERC } from 'wirescript';
  *   const result = runERC(schematic);
  *   console.log(result.summary());
  */

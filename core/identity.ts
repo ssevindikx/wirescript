@@ -1,5 +1,5 @@
 /**
- * WireLang Core - identity helpers for reverse DB reconstruction
+ * WireScript Core - identity helpers for reverse DB reconstruction
  */
 
 import { Component } from './Component';

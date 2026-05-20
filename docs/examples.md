@@ -13,7 +13,7 @@ npm run example
 **DC source → Resistor → LED → Ground**
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED } from 'wirelang';
+import { Circuit, DC, R, LED, GND, RED } from 'wirescript';
 
 const circuit = Circuit('LED Blinker',
   DC(5),
@@ -35,7 +35,7 @@ console.log(circuit.getSummary());
 **Two resistors creating Vout = Vin × R2 / (R1 + R2)**
 
 ```ts
-import { createSchematic, Series, applyToCircuit, DC, R, GND, kOhm } from 'wirelang';
+import { createSchematic, Series, applyToCircuit, DC, R, GND, kOhm } from 'wirescript';
 
 const s = createSchematic('Voltage Divider');
 
@@ -51,7 +51,7 @@ applyToCircuit(s, result);
 ## 3. Parallel Resistors
 
 ```ts
-import { Circuit, DC, Parallel, R, GND } from 'wirelang';
+import { Circuit, DC, Parallel, R, GND } from 'wirescript';
 
 // Equivalent resistance: 1/R_eq = 1/1k + 1/2k + 1/3k ≈ 545 Ω
 const circuit = Circuit('Parallel Resistors',
@@ -68,7 +68,7 @@ const circuit = Circuit('Parallel Resistors',
 **f_c = 1 / (2π × R × C) ≈ 1.6 kHz**
 
 ```ts
-import { Circuit, AC, R, C, GND, kOhm, uF, kHz } from 'wirelang';
+import { Circuit, AC, R, C, GND, kOhm, uF, kHz } from 'wirescript';
 
 const circuit = Circuit('RC Low-Pass Filter',
   AC(5, kHz(10)),   // Input signal
@@ -85,7 +85,7 @@ const circuit = Circuit('RC Low-Pass Filter',
 **f_r = 1 / (2π × √(LC)) ≈ 15.9 kHz**
 
 ```ts
-import { Circuit, DC, Parallel, Series, R, L, C, GND, mH, uF } from 'wirelang';
+import { Circuit, DC, Parallel, Series, R, L, C, GND, mH, uF } from 'wirescript';
 
 const circuit = Circuit('LC Tank',
   DC(12),
@@ -100,7 +100,7 @@ const circuit = Circuit('LC Tank',
 ## 6. Traffic Light (Multiple LEDs in parallel)
 
 ```ts
-import { Circuit, DC, Series, Parallel, R, LED, GND, RED, GREEN, BLUE } from 'wirelang';
+import { Circuit, DC, Series, Parallel, R, LED, GND, RED, GREEN, BLUE } from 'wirescript';
 
 const circuit = Circuit('Traffic Light',
   DC(5),
@@ -120,7 +120,7 @@ const circuit = Circuit('Traffic Light',
 **Transistor switching an LED on/off via base drive**
 
 ```ts
-import { Circuit, DC, R, LED, GND, NPN, kOhm, RED } from 'wirelang';
+import { Circuit, DC, R, LED, GND, NPN, kOhm, RED } from 'wirescript';
 
 const t = NPN('2N2222');
 
@@ -138,7 +138,7 @@ const circuit = Circuit('BJT Switch', [
 **Gain = −Rf/Rin = −10**
 
 ```ts
-import { Circuit, AC, R, GND, VCC, VNEG, OpAmp, kOhm } from 'wirelang';
+import { Circuit, AC, R, GND, VCC, VNEG, OpAmp, kOhm } from 'wirescript';
 
 const op = OpAmp('LM741');
 
@@ -158,7 +158,7 @@ const circuit = Circuit('Inverting Amplifier', [
 **Set/Reset flip-flop using cross-coupled NAND gates**
 
 ```ts
-import { Circuit, HIGH, NAND } from 'wirelang';
+import { Circuit, HIGH, NAND } from 'wirescript';
 
 const nand1 = NAND();
 const nand2 = NAND();
@@ -179,7 +179,7 @@ const srLatch = Circuit('SR Latch', { autoGround: false }, [
 **Converts AC to pulsed DC using 4 diodes**
 
 ```ts
-import { createSchematic, AC, D, R, C, GND } from 'wirelang';
+import { createSchematic, AC, D, R, C, GND } from 'wirescript';
 
 const s = createSchematic('Bridge Rectifier');
 const src = AC(12, 60);
@@ -210,7 +210,7 @@ console.log(s.getSummary());
 ## 11. Using ERC with any circuit
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirelang';
+import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirescript';
 
 const circuit = Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 const result = runERC(circuit);
@@ -232,7 +232,7 @@ console.log(faults.summary());
 ## 12. Serialization round-trip
 
 ```ts
-import { Circuit, DC, R, GND, compileDslToDb, reverseDbToDsl } from 'wirelang';
+import { Circuit, DC, R, GND, compileDslToDb, reverseDbToDsl } from 'wirescript';
 
 const original = Circuit('Test', DC(5), R(1000), GND());
 

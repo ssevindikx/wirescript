@@ -1,5 +1,5 @@
 /**
- * WireLang Core - MOSFET Components
+ * WireScript Core - MOSFET Components
  * N-channel and P-channel MOSFETs
  */
 

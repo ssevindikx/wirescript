@@ -1,5 +1,5 @@
 /**
- * WireLang ERC — Test Suite
+ * WireScript ERC — Test Suite
  * Tests each electrical rule check against known-good and known-bad circuits
  */
 

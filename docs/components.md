@@ -1,6 +1,6 @@
 # Components Reference
 
-All components are importable from `'wirelang'`.  
+All components are importable from `'wirescript'`.  
 Every component has:
 - An auto-generated `label` (`R1`, `C2`, `Q1`, …)
 - A `validate()` method returning `string[]` errors
@@ -13,7 +13,7 @@ Every component has:
 ### Resistor — `R(value)`
 
 ```ts
-import { R, kOhm, MOhm } from 'wirelang';
+import { R, kOhm, MOhm } from 'wirescript';
 
 const r1 = R(330);           // 330 Ω
 const r2 = R(kOhm(4.7));    // 4.7 kΩ
@@ -33,7 +33,7 @@ const r3 = R(MOhm(1));      // 1 MΩ
 ### Capacitor — `C(value)`
 
 ```ts
-import { C, uF, nF, pF } from 'wirelang';
+import { C, uF, nF, pF } from 'wirescript';
 
 const c1 = C(uF(100));   // 100 µF
 const c2 = C(nF(10));    // 10 nF
@@ -52,7 +52,7 @@ const c3 = C(pF(22));    // 22 pF
 ### Inductor — `L(value)`
 
 ```ts
-import { L, mH, uH } from 'wirelang';
+import { L, mH, uH } from 'wirescript';
 
 const l1 = L(mH(10));    // 10 mH
 const l2 = L(uH(470));   // 470 µH
@@ -72,7 +72,7 @@ const l2 = L(uH(470));   // 470 µH
 ### Diode — `D(params?)`
 
 ```ts
-import { D } from 'wirelang';
+import { D } from 'wirescript';
 
 const d1 = D();                          // Generic (Vf=0.7V)
 const d2 = D('1N4148');                 // By part number
@@ -96,7 +96,7 @@ const d3 = D({ forwardVoltage: 0.4, maxCurrent: 0.1 });
 ### LED — `LED(color?)` / `LED(params?)`
 
 ```ts
-import { LED, RED, GREEN, BLUE, YELLOW, WHITE, ORANGE, PURPLE, CYAN, PINK, AMBER, IR, UV } from 'wirelang';
+import { LED, RED, GREEN, BLUE, YELLOW, WHITE, ORANGE, PURPLE, CYAN, PINK, AMBER, IR, UV } from 'wirescript';
 
 const led1 = LED(RED);
 const led2 = LED(BLUE);
@@ -128,7 +128,7 @@ const led3 = LED({ color: GREEN, forwardVoltage: 2.1, maxCurrent: 0.02 });
 ### DC Voltage Source — `DC(voltage)`
 
 ```ts
-import { DC } from 'wirelang';
+import { DC } from 'wirescript';
 
 const src = DC(5);    // 5 V DC
 const src = DC(3.3);  // 3.3 V DC
@@ -144,7 +144,7 @@ const src = DC(3.3);  // 3.3 V DC
 ### AC Voltage Source — `AC(voltage, frequency?)`
 
 ```ts
-import { AC, kHz } from 'wirelang';
+import { AC, kHz } from 'wirescript';
 
 const src = AC(12, 60);         // 12 Vrms @ 60 Hz
 const src = AC(1, kHz(10));     // 1 Vrms @ 10 kHz
@@ -157,7 +157,7 @@ const src = AC(1, kHz(10));     // 1 Vrms @ 10 kHz
 ### DC Current Source — `IDC(current)`
 
 ```ts
-import { IDC, mA } from 'wirelang';
+import { IDC, mA } from 'wirescript';
 
 const i = IDC(mA(10));   // 10 mA DC current source
 ```
@@ -172,7 +172,7 @@ const i = IDC(mA(10));   // 10 mA DC current source
 ### AC Current Source — `IAC(current, frequency?)`
 
 ```ts
-import { IAC, mA, kHz } from 'wirelang';
+import { IAC, mA, kHz } from 'wirescript';
 
 const i = IAC(mA(1), kHz(1));
 ```
@@ -182,7 +182,7 @@ const i = IAC(mA(1), kHz(1));
 ### Ground — `GND()`
 
 ```ts
-import { GND } from 'wirelang';
+import { GND } from 'wirescript';
 
 const gnd = GND();
 gnd.gnd              // Pin
@@ -196,7 +196,7 @@ gnd.getGroundNode()  // Node (isGround() === true)
 Ideal voltage rails (zero source impedance assumed).
 
 ```ts
-import { VCC, VDD, VPOS, VNEG } from 'wirelang';
+import { VCC, VDD, VPOS, VNEG } from 'wirescript';
 
 VCC(5)      // +5 V digital supply
 VDD(3.3)    // +3.3 V (common for MCUs)
@@ -213,7 +213,7 @@ Each has a single pin (`p1`) connected to the rail voltage.
 ### NPN BJT — `NPN(params?)`
 
 ```ts
-import { NPN } from 'wirelang';
+import { NPN } from 'wirescript';
 
 const t = NPN();              // Generic NPN
 const t = NPN('2N2222');     // By model name
@@ -248,7 +248,7 @@ t.E  // emitter
 ### N-Channel MOSFET — `NMOS(params?)`
 
 ```ts
-import { NMOS } from 'wirelang';
+import { NMOS } from 'wirescript';
 
 const m = NMOS();
 const m = NMOS('2N7000');
@@ -278,7 +278,7 @@ Same interface as `NMOS`.
 Full op-amp with supply pins. Use when power supply connections matter.
 
 ```ts
-import { OpAmp, LM741, TL072, NE5532, LM358 } from 'wirelang';
+import { OpAmp, LM741, TL072, NE5532, LM358 } from 'wirescript';
 
 const op = OpAmp();           // Generic
 const op = OpAmp('LM741');   // Specific part
@@ -325,7 +325,7 @@ const op = OpAmp3('TL072');
 All gates support an optional IC family string (default: `'74HC'`).
 
 ```ts
-import { NOT, AND, OR, XOR, NAND, NOR } from 'wirelang';
+import { NOT, AND, OR, XOR, NAND, NOR } from 'wirescript';
 
 const inv  = NOT();           // Inverter — 1 input
 const and2 = AND();           // 2-input AND
@@ -346,7 +346,7 @@ const nor  = NOR();
 Constant logic-level sources (1-pin output).
 
 ```ts
-import { HIGH, LOW } from 'wirelang';
+import { HIGH, LOW } from 'wirescript';
 
 Circuit('NOT Gate', { autoGround: false }, [
   [HIGH(), not1.A],
@@ -359,7 +359,7 @@ Circuit('NOT Gate', { autoGround: false }, [
 ### Clock — `CLK(frequency, dutyCycle?)`
 
 ```ts
-import { CLK, kHz } from 'wirelang';
+import { CLK, kHz } from 'wirescript';
 
 const clk = CLK(kHz(1));          // 1 kHz, 50% duty
 const clk = CLK(kHz(1), 0.25);   // 1 kHz, 25% duty
@@ -372,7 +372,7 @@ Output pin: `out`
 ## `ComponentType` enum
 
 ```ts
-import { ComponentType } from 'wirelang';
+import { ComponentType } from 'wirescript';
 
 ComponentType.Resistor       // 'resistor'
 ComponentType.Capacitor      // 'capacitor'

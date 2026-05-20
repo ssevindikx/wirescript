@@ -1,6 +1,6 @@
-# WireLang Documentation
+# WireScript Documentation
 
-WireLang is a **code-first DSL** for describing electronic circuits in TypeScript.  
+WireScript is a **code-first DSL** for describing electronic circuits in TypeScript.  
 Its only job: *"which pin is connected to which node, and what is this component's physical parameter."*
 
 ---
@@ -23,13 +23,13 @@ Its only job: *"which pin is connected to which node, and what is this component
 
 ## Two API Styles
 
-WireLang offers two equivalent ways to describe circuits:
+WireScript offers two equivalent ways to describe circuits:
 
 ### 1. DSL API *(recommended)*
 Declarative, concise. Best for most use cases.
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED } from 'wirelang';
+import { Circuit, DC, R, LED, GND, RED } from 'wirescript';
 
 const circuit = Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 ```
@@ -38,7 +38,7 @@ const circuit = Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 Imperative, explicit node/pin management. Best for complex topologies.
 
 ```ts
-import { createSchematic, DC, R, LED, GND, RED } from 'wirelang';
+import { createSchematic, DC, R, LED, GND, RED } from 'wirescript';
 
 const s = createSchematic('LED Driver');
 const src = DC(5), r = R(330), led = LED(RED), gnd = GND();

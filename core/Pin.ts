@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Pin
+ * WireScript Core - Pin
  * Represents a connection point on a component
  */
 

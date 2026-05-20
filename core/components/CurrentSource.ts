@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Current Source Component
+ * WireScript Core - Current Source Component
  */
 
 import { Component } from '../Component';

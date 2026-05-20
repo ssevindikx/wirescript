@@ -48,8 +48,8 @@ function runCli(args: string[]): { stdout: string; stderr: string } {
 function writeInputModule(tempDir: string): string {
   const inputPath = path.join(tempDir, 'input.js');
   const content = [
-    `const wirelang = require(${JSON.stringify(distIndex)});`,
-    'const { Circuit, DC, R, GND } = wirelang;',
+    `const wirescript = require(${JSON.stringify(distIndex)});`,
+    'const { Circuit, DC, R, GND } = wirescript;',
     'module.exports = () => Circuit("Cli", DC(5), R(100), GND());',
     '',
   ].join('\n');
@@ -85,7 +85,7 @@ describe('CLI', () => {
   });
 
   it('should compile DSL to DB via CLI', () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wirelang-cli-'));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wirescript-cli-'));
     const inputPath = writeInputModule(tempDir);
     const outputPath = path.join(tempDir, 'output.json');
 
@@ -94,14 +94,14 @@ describe('CLI', () => {
     const raw = fs.readFileSync(outputPath, 'utf-8');
     const db = JSON.parse(raw) as { schema: string; name: string; components: unknown[]; nodes: unknown[] };
 
-    expect(db.schema).toBe('wirelang-db@v1');
+    expect(db.schema).toBe('wirescript-db@v1');
     expect(db.name).toBe('Cli');
     expect(db.components.length).toBe(3);
     expect(db.nodes.length).toBeGreaterThan(0);
   });
 
   it('should compile plain DSL input to DB via CLI', () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wirelang-cli-'));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wirescript-cli-'));
     const inputPath = writePlainDslInput(tempDir);
     const outputPath = path.join(tempDir, 'plain-output.json');
 
@@ -110,14 +110,14 @@ describe('CLI', () => {
     const raw = fs.readFileSync(outputPath, 'utf-8');
     const db = JSON.parse(raw) as { schema: string; name: string; components: unknown[]; nodes: unknown[] };
 
-    expect(db.schema).toBe('wirelang-db@v1');
+    expect(db.schema).toBe('wirescript-db@v1');
     expect(db.name).toBe('Cli Plain');
     expect(db.components.length).toBe(3);
     expect(db.nodes.length).toBeGreaterThan(0);
   });
 
   it('should compile DB to DSL via CLI with default plain output', () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wirelang-cli-'));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wirescript-cli-'));
     const inputPath = writeInputModule(tempDir);
     const dbPath = path.join(tempDir, 'output.json');
     const dslPath = path.join(tempDir, 'output.dsl.js');
@@ -140,7 +140,7 @@ describe('CLI', () => {
   });
 
   it('should compile DB to TypeScript-like output via CLI when format is ts', () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wirelang-cli-'));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wirescript-cli-'));
     const inputPath = writeInputModule(tempDir);
     const dbPath = path.join(tempDir, 'output.json');
     const tsPath = path.join(tempDir, 'output.ts');

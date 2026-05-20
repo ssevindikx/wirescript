@@ -1,6 +1,6 @@
 # Op-Amps
 
-WireLang exposes op-amp abstractions and a few named models. There are two families shown in examples:
+WireScript exposes op-amp abstractions and a few named models. There are two families shown in examples:
 
 - 5-pin op-amp (full model) — use `OpAmp(name)` which returns an object with pins used in examples: `vPos`, `vNeg`, `inP`, `inN`, `out`.
 - 3-pin op-amp (simplified) — use `OpAmp3(name)` which returns `inP`, `inN`, `out` and may be used with `autoGround: false` if needed.

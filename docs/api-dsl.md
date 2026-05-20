@@ -14,7 +14,7 @@ Circuit(name: string, ...items: Connectable[]): Schematic
 ```
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED } from 'wirelang';
+import { Circuit, DC, R, LED, GND, RED } from 'wirescript';
 
 const circuit = Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 ```
@@ -53,7 +53,7 @@ Circuit(name: string, paths: PathItem[][]): Schematic
 Each inner array is an independent series path. Shared component pins act as junction points.
 
 ```ts
-import { Circuit, DC, R, LED, GND, NPN, kOhm, RED } from 'wirelang';
+import { Circuit, DC, R, LED, GND, NPN, kOhm, RED } from 'wirescript';
 
 const t = NPN('2N2222');
 
@@ -75,7 +75,7 @@ Series(...items: Connectable[]): ConnectionResult
 Connects components end-to-end. Returns a `ConnectionResult` that can be nested.
 
 ```ts
-import { Series, DC, R, LED, GND, RED } from 'wirelang';
+import { Series, DC, R, LED, GND, RED } from 'wirescript';
 
 const branch = Series(R(220), LED(RED));  // reusable sub-circuit
 ```
@@ -91,7 +91,7 @@ Parallel(...items: Connectable[]): ConnectionResult
 All first pins share one node; all last pins share another.
 
 ```ts
-import { Circuit, DC, Parallel, R, GND } from 'wirelang';
+import { Circuit, DC, Parallel, R, GND } from 'wirescript';
 
 const circuit = Circuit('Parallel R',
   DC(9),
@@ -125,7 +125,7 @@ wire(pin1: Pin, pin2: Pin): Node
 Creates a node and connects both pins to it.
 
 ```ts
-import { wire } from 'wirelang';
+import { wire } from 'wirescript';
 
 const node = wire(r1.p2, c1.p1);
 ```
@@ -141,7 +141,7 @@ junction(...pins: Pin[]): Node
 Connects 2+ pins to a single shared node (electrical junction).
 
 ```ts
-import { junction } from 'wirelang';
+import { junction } from 'wirescript';
 
 const midNode = junction(r1.p2, c1.p1, led.anode);
 ```
@@ -157,7 +157,7 @@ toGround(pin: Pin, schematic: Schematic): void
 Connects a pin to the schematic's ground node.
 
 ```ts
-import { toGround } from 'wirelang';
+import { toGround } from 'wirescript';
 
 toGround(cap.p2, mySchematic);
 ```
@@ -173,7 +173,7 @@ applyToCircuit(schematic: Schematic, result: ConnectionResult): Schematic
 Adds all components and nodes from a `ConnectionResult` into an existing schematic.
 
 ```ts
-import { createSchematic, applyToCircuit, Series, DC, R, GND } from 'wirelang';
+import { createSchematic, applyToCircuit, Series, DC, R, GND } from 'wirescript';
 
 const s = createSchematic('Custom');
 applyToCircuit(s, Series(DC(5), R(1000), GND()));

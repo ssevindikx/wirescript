@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Diode Component
+ * WireScript Core - Diode Component
  */
 
 import { PolarizedTwoTerminalComponent } from '../Component';

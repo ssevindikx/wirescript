@@ -1,5 +1,5 @@
 /**
- * WireLang Core - DSL Helper Functions
+ * WireScript Core - DSL Helper Functions
  * Series and Parallel are NOT classes, they are helper functions
  * that produce Pin-Node bindings
  */

@@ -1,5 +1,5 @@
 /**
- * WireLang Core - BJT Transistor Components
+ * WireScript Core - BJT Transistor Components
  * NPN and PNP bipolar junction transistors
  */
 

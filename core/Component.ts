@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Component
+ * WireScript Core - Component
  * Abstract base class for all circuit components
  */
 

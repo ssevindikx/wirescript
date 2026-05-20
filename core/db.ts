@@ -1,5 +1,5 @@
 /**
- * WireLang Core - DB schema and DSL<->DB transforms
+ * WireScript Core - DB schema and DSL<->DB transforms
  */
 
 import { Component } from './Component';
@@ -8,8 +8,8 @@ import { Pin } from './Pin';
 import { Schematic } from './Schematic';
 import { ComponentParams, ComponentType, PinDirection, SourceType } from './types';
 
-export interface WireLangDb {
-  schema: 'wirelang-db@v1';
+export interface WireScriptDb {
+  schema: 'wirescript-db@v1';
   name: string;
   components: DbComponent[];
   nodes: DbNode[];
@@ -45,7 +45,7 @@ export interface DbToDslOptions {
   preserveIds?: boolean;
 }
 
-const DB_SCHEMA = 'wirelang-db@v1';
+const DB_SCHEMA = 'wirescript-db@v1';
 
 function extractExtras(component: Component): Record<string, unknown> | undefined {
   const baseKeys = new Set(['id', 'type', 'pins', 'params', 'label']);
@@ -61,7 +61,7 @@ function extractExtras(component: Component): Record<string, unknown> | undefine
   return Object.keys(extras).length > 0 ? extras : undefined;
 }
 
-export function compileDslToDb(schematic: Schematic): WireLangDb {
+export function compileDslToDb(schematic: Schematic): WireScriptDb {
   const nodes: DbNode[] = schematic.nodes.map((node: Node) => ({
     id: node.id,
     name: node.name,
@@ -380,8 +380,8 @@ function buildComponentExpression(component: DbComponent): { expression: string;
   }
 }
 
-function renderTypeScriptFromDb(db: WireLangDb, options: DbToDslOptions = {}): string {
-  const moduleImport = options.moduleImport ?? 'wirelang';
+function renderTypeScriptFromDb(db: WireScriptDb, options: DbToDslOptions = {}): string {
+  const moduleImport = options.moduleImport ?? 'wirescript';
   const exportName = options.exportName ?? 'default';
   const preserveIds = options.preserveIds ?? true;
 
@@ -491,7 +491,7 @@ function renderTypeScriptFromDb(db: WireLangDb, options: DbToDslOptions = {}): s
   return lines.join('\n');
 }
 
-function renderPlainDslFromDb(db: WireLangDb, options: DbToDslOptions = {}): string {
+function renderPlainDslFromDb(db: WireScriptDb, options: DbToDslOptions = {}): string {
   void options;
   const usedNames = new Set<string>();
   const lines: string[] = [];
@@ -568,7 +568,7 @@ function getPinAccessor(component: DbComponent, pinName: string): string | undef
   return undefined;
 }
 
-export function reverseDbToDsl(db: WireLangDb, options: DbToDslOptions = {}): string {
+export function reverseDbToDsl(db: WireScriptDb, options: DbToDslOptions = {}): string {
   const format = options.format ?? 'dsl';
 
   if (format === 'ts') {

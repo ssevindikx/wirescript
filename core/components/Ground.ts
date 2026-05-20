@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Ground Component
+ * WireScript Core - Ground Component
  * Represents the reference node (0V) in a circuit
  */
 

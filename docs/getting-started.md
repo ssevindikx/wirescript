@@ -3,7 +3,7 @@
 ## Installation
 
 ```sh
-npm install wirelang
+npm install wirescript
 ```
 
 ## Requirements
@@ -18,7 +18,7 @@ npm install wirelang
 ### DSL style (recommended)
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirelang';
+import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirescript';
 
 // Describe the circuit
 const circuit = Circuit('LED Driver',
@@ -43,7 +43,7 @@ console.log(erc.summary()); // ✅ ERC passed — no violations found.
 ### TypeScript style (full control)
 
 ```ts
-import { createSchematic, DC, R, LED, GND, RED } from 'wirelang';
+import { createSchematic, DC, R, LED, GND, RED } from 'wirescript';
 
 const s = createSchematic('LED Driver');
 

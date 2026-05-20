@@ -1,12 +1,28 @@
 {
-  "name": "wirelang",
+  "name": "wirescript",
   "version": "0.1.0",
   "description": "A code-first DSL for describing electronic circuits",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "bin": {
-    "wirelang": "./dist/cli.js"
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./erc": {
+      "types": "./dist/erc.d.ts",
+      "default": "./dist/erc.js"
+    }
   },
+  "bin": {
+    "wirescript": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "docs"
+  ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "watch": "tsc --watch",

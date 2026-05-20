@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import * as core from '../core';
 import { Circuit, DC, GND, R } from '../core';
-import { compileDslToDb, reverseDbToDsl, type WireLangDb } from '../core/db';
+import { compileDslToDb, reverseDbToDsl, type WireScriptDb } from '../core/db';
 
 describe('DB <-> DSL IO Demo', () => {
   it('prints input/output for both directions', () => {
@@ -20,14 +20,14 @@ describe('DB <-> DSL IO Demo', () => {
     console.log('[DSL -> DB] OUTPUT DB JSON');
     console.log(JSON.stringify(dbOutput, null, 2));
 
-    const dbInput: WireLangDb = {
-      schema: 'wirelang-db@v1',
+    const dbInput: WireScriptDb = {
+      schema: 'wirescript-db@v1',
       name: 'IO Test DB Input',
       components: dbOutput.components,
       nodes: dbOutput.nodes,
     };
 
-    const dslOutput = reverseDbToDsl(dbInput, { moduleImport: '@wirelang/core', format: 'dsl' });
+    const dslOutput = reverseDbToDsl(dbInput, { moduleImport: '@wirescript/core', format: 'dsl' });
 
     console.log('\n[DB -> DSL] INPUT DB JSON');
     console.log(JSON.stringify(dbInput, null, 2));

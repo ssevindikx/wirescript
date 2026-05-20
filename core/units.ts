@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Unit System
+ * WireScript Core - Unit System
  * Utility functions for SI unit multipliers
  * These are pure multiplier functions, not classes
  */

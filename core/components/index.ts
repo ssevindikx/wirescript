@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Components Index
+ * WireScript Core - Components Index
  * Re-exports all component classes and factory functions
  */
 

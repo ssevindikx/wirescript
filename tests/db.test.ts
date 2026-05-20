@@ -32,7 +32,7 @@ describe('DB Transforms', () => {
 
     const db = compileDslToDb(s);
 
-    expect(db.schema).toBe('wirelang-db@v1');
+    expect(db.schema).toBe('wirescript-db@v1');
     expect(db.name).toBe('Simple');
     expect(db.components.length).toBe(3);
     expect(db.nodes.length).toBeGreaterThan(0);
@@ -55,7 +55,7 @@ describe('DB Transforms', () => {
     const db = dsl2db(s);
     const dsl = db2dsl(db);
 
-    expect(db.schema).toBe('wirelang-db@v1');
+    expect(db.schema).toBe('wirescript-db@v1');
     expect(dsl).not.toContain('module.exports');
     expect(dsl).not.toContain('require(');
     expect(dsl).not.toContain('const ');
@@ -127,7 +127,7 @@ describe('DB Transforms', () => {
     applyToCircuit(s, result);
 
     const db = compileDslToDb(s);
-    const dsl = reverseDbToDsl(db, { moduleImport: '@wirelang/core' });
+    const dsl = reverseDbToDsl(db, { moduleImport: '@wirescript/core' });
 
     const runtimeScope: Record<string, unknown> = { ...core };
     const baseCircuit = core.Circuit;

@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Logic Gate Components
+ * WireScript Core - Logic Gate Components
  * Basic digital logic gates: NOT, AND, OR, XOR, NAND, NOR
  * Plus HIGH/LOW constants and CLK source
  */

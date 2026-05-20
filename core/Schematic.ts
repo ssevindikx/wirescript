@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Schematic
+ * WireScript Core - Schematic
  * Container for components and nodes
  * The Schematic IS the IR (Intermediate Representation) in v1
  */
@@ -337,7 +337,7 @@ export class Schematic {
   erc(options?: ERCOptions): ERCResult {
     if (!Schematic._ercRunner) {
       throw new Error(
-        'ERC engine not registered. Import "wirelang/erc" or call registerERC() first.',
+        'ERC engine not registered. Import "wirescript/erc" or call registerERC() first.',
       );
     }
     return Schematic._ercRunner(this, options);

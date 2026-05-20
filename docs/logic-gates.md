@@ -1,6 +1,6 @@
 # Logic Gates
 
-WireLang includes simple logic gate factories and helpers for creating small digital circuits and tests.
+WireScript includes simple logic gate factories and helpers for creating small digital circuits and tests.
 
 ## Gate factories
 

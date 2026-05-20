@@ -1,14 +1,14 @@
 # Serialization — DB Layer
 
-WireLang includes a JSON serialization layer (`wirelang-db@v1`) that allows round-trip conversion between the runtime DSL representation and a stable, JSON-safe format.
+WireScript includes a JSON serialization layer (`wirescript-db@v1`) that allows round-trip conversion between the runtime DSL representation and a stable, JSON-safe format.
 
 ---
 
-## Schema: `WireLangDb`
+## Schema: `WireScriptDb`
 
 ```ts
-interface WireLangDb {
-  schema:     'wirelang-db@v1';
+interface WireScriptDb {
+  schema:     'wirescript-db@v1';
   name:       string;
   components: DbComponent[];
   nodes:      DbNode[];
@@ -43,14 +43,14 @@ interface DbNode {
 ## `compileDslToDb(schematic)` — DSL → DB
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED, compileDslToDb } from 'wirelang';
+import { Circuit, DC, R, LED, GND, RED, compileDslToDb } from 'wirescript';
 
 const circuit = Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 const db = compileDslToDb(circuit);
 
 console.log(JSON.stringify(db, null, 2));
 // {
-//   "schema": "wirelang-db@v1",
+//   "schema": "wirescript-db@v1",
 //   "name": "LED Driver",
 //   "components": [ ... ],
 //   "nodes": [ ... ]
@@ -63,10 +63,10 @@ The resulting object is fully JSON-serializable — no circular references.
 
 ## `reverseDbToDsl(db, options?)` — DB → DSL code
 
-Converts a `WireLangDb` object back into runnable source code.
+Converts a `WireScriptDb` object back into runnable source code.
 
 ```ts
-import { reverseDbToDsl } from 'wirelang';
+import { reverseDbToDsl } from 'wirescript';
 
 const code = reverseDbToDsl(db);
 // Returns plain DSL code string by default:
@@ -81,7 +81,7 @@ const code = reverseDbToDsl(db);
 ```ts
 interface DbToDslOptions {
   format?:      'dsl' | 'ts';  // Output format (default: 'dsl')
-  moduleImport?: string;        // Import path for 'ts' format (default: 'wirelang')
+  moduleImport?: string;        // Import path for 'ts' format (default: 'wirescript')
   exportName?:   string;        // Export name for 'ts' format (default: 'default')
   preserveIds?:  boolean;       // Emit applyComponentIdentity calls (default: true)
 }
@@ -116,13 +116,13 @@ Returns executable TypeScript that reconstructs the full schematic:
 ```ts
 const code = reverseDbToDsl(db, {
   format: 'ts',
-  moduleImport: 'wirelang',
+  moduleImport: 'wirescript',
   exportName: 'ledCircuit',
 });
 ```
 
 ```ts
-import { R, LED, GND, createSchematic, applyComponentIdentity, applyNodeIdentity } from 'wirelang';
+import { R, LED, GND, createSchematic, applyComponentIdentity, applyNodeIdentity } from 'wirescript';
 
 const s = createSchematic("LED Driver");
 
@@ -144,8 +144,8 @@ export const ledCircuit = s;
 
 ```ts
 // All four aliases are equivalent:
-import { compileDslToDb, dslToDb, dsl2db }   from 'wirelang'; // DSL → DB
-import { reverseDbToDsl, dbToDsl, db2dsl }   from 'wirelang'; // DB → DSL
+import { compileDslToDb, dslToDb, dsl2db }   from 'wirescript'; // DSL → DB
+import { reverseDbToDsl, dbToDsl, db2dsl }   from 'wirescript'; // DB → DSL
 ```
 
 ---
@@ -153,7 +153,7 @@ import { reverseDbToDsl, dbToDsl, db2dsl }   from 'wirelang'; // DB → DSL
 ## Round-trip example
 
 ```ts
-import { Circuit, DC, R, GND, compileDslToDb, reverseDbToDsl } from 'wirelang';
+import { Circuit, DC, R, GND, compileDslToDb, reverseDbToDsl } from 'wirescript';
 
 // Build
 const original = Circuit('Test', DC(5), R(1000), GND());
@@ -177,7 +177,7 @@ console.log(code);
 When `preserveIds: true` (default), the generated TypeScript includes `applyComponentIdentity` calls that restore the original IDs and labels. This ensures that component references remain stable across save/load cycles — critical for tools that store component IDs (e.g. WireScript Studio).
 
 ```ts
-import { applyComponentIdentity, applyNodeIdentity } from 'wirelang';
+import { applyComponentIdentity, applyNodeIdentity } from 'wirescript';
 
 applyComponentIdentity(myComponent, {
   id: 'resistor_7',

@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Operational Amplifier Component
+ * WireScript Core - Operational Amplifier Component
  * 5-pin OpAmp: inP (+), inN (-), out, vPos (V+), vNeg (V-)
  */
 

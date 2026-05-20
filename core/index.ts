@@ -1,10 +1,10 @@
 /**
- * WireLang Core v1
+ * WireScript Core v1
  * A code-first DSL for describing electronic circuits
- * 
- * Core's only job: "which pin is connected to which node 
+ *
+ * Core's only job: "which pin is connected to which node
  * and what is this component's physical parameter"
- * 
+ *
  * NO: UI, simulation, rendering, coordinates
  * YES: topology + value validation
  */
@@ -67,7 +67,7 @@ export {
   dbToDsl,
   dsl2db,
   db2dsl,
-  type WireLangDb,
+  type WireScriptDb,
   type DbComponent,
   type DbNode,
   type DbPin,

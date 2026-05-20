@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Type Definitions
+ * WireScript Core - Type Definitions
  * Minimal enums and type definitions for circuit components
  */
 

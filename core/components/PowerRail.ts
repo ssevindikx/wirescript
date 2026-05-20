@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Power Rail Component
+ * WireScript Core - Power Rail Component
  * Single-pin power supply rails (VCC, VDD, etc.)
  */
 

@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Node
+ * WireScript Core - Node
  * Represents an electrical node in the circuit (topological reality)
  * A node is where multiple pins connect electrically
  */

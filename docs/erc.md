@@ -8,7 +8,7 @@ It catches wiring mistakes, dangerous configurations, and design quality issues 
 ## Quick Start
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirelang';
+import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirescript';
 
 const circuit = Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 
@@ -19,7 +19,7 @@ console.log(result.summary()); // ✅ ERC passed — no violations found.
 ```
 
 ```ts
-// Inline on any schematic (after importing runERC or wirelang/erc)
+// Inline on any schematic (after importing runERC or wirescript/erc)
 const result = circuit.erc();
 ```
 
@@ -28,7 +28,7 @@ const result = circuit.erc();
 ## `runERC(schematic, options?)` — Main function
 
 ```ts
-import { runERC } from 'wirelang';
+import { runERC } from 'wirescript';
 
 const result = runERC(schematic);
 const result = runERC(schematic, {

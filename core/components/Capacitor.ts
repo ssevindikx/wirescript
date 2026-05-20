@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Capacitor Component
+ * WireScript Core - Capacitor Component
  */
 
 import { TwoTerminalComponent } from '../Component';

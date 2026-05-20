@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Run WireLang examples
+ * Run WireScript examples
  */
 
 import { runAllExamples } from './dist/examples.js';

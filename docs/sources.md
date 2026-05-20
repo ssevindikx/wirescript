@@ -1,6 +1,6 @@
 # Sources
 
-WireLang provides factories for voltage and current sources as well as named power rails.
+WireScript provides factories for voltage and current sources as well as named power rails.
 
 ## Voltage Sources
 
@@ -19,7 +19,7 @@ Power rails (convenience factories)
 Usage Example
 
 ```ts
-import { Circuit, DC, VCC, VNEG, R, GND } from '../core';
+import { Circuit, DC, VCC, VNEG, R, GND } from 'wirescript';
 
 const s = Circuit('Simple', [
   [VCC(9), R(1000), GND()]

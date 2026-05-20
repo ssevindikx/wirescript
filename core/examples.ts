@@ -1,6 +1,6 @@
 /**
- * WireLang Core - Usage Examples
- * 
+ * WireScript Core - Usage Examples
+ *
  * These examples demonstrate the DSL syntax and core functionality
  */
 
@@ -20,7 +20,7 @@ import {
   // Colors
   RED, GREEN, BLUE,
 } from './index';
-import { compileDslToDb, reverseDbToDsl, type WireLangDb } from './db';
+import { compileDslToDb, reverseDbToDsl, type WireScriptDb } from './db';
 
 // =============================================================================
 // Example 1: Simple LED Circuit
@@ -265,7 +265,7 @@ export function parallelRCDemo(): Schematic {
 
 export function runAllExamples(): void {
   console.log('='.repeat(60));
-  console.log('WireLang Core v1 - Examples');
+  console.log('WireScript Core v1 - Examples');
   console.log('='.repeat(60));
 
   const examples = [
@@ -317,8 +317,8 @@ function printDbDslIoDemo(): void {
   console.log('\nOUTPUT (DB JSON):');
   console.log(JSON.stringify(dbFromDsl, null, 2));
 
-  const dbInput: WireLangDb = {
-    schema: 'wirelang-db@v1',
+  const dbInput: WireScriptDb = {
+    schema: 'wirescript-db@v1',
     name: 'IO Demo From DB',
     components: dbFromDsl.components,
     nodes: dbFromDsl.nodes,

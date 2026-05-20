@@ -1,5 +1,5 @@
 /**
- * WireLang Core - Inductor Component
+ * WireScript Core - Inductor Component
  */
 
 import { TwoTerminalComponent } from '../Component';

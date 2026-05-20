@@ -1,4 +1,4 @@
-# WireLang
+# WireScript
 
 A **code-first DSL** for describing electronic circuits in TypeScript.
 
@@ -9,13 +9,13 @@ A **code-first DSL** for describing electronic circuits in TypeScript.
 ## Install
 
 ```sh
-npm install wirelang
+npm install wirescript
 ```
 
 ## Quick Start
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirelang';
+import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirescript';
 
 // Describe the circuit
 const circuit = Circuit('LED Driver',
@@ -70,8 +70,8 @@ Circuit('BJT Switch', [
 - **12 ERC rules** — Short circuit, polarity, fan-out, floating inputs, and more
 - **Component library** — Resistors, capacitors, inductors, diodes, LEDs, BJTs, MOSFETs, op-amps, logic gates
 - **SI unit helpers** — `kOhm`, `uF`, `mH`, `kHz`, `mA`, …
-- **JSON serialization** — Save/load circuits as `wirelang-db@v1` JSON
-- **CLI** — `wirelang compile` / `wirelang decompile`
+- **JSON serialization** — Save/load circuits as `wirescript-db@v1` JSON
+- **CLI** — `wirescript compile` / `wirescript decompile`
 - **163 tests** passing
 
 ---
@@ -87,4 +87,4 @@ npm run example
 
 ## License
 
-Proprietary — © Samet Sevindik. See [LICENSE](./LICENSE).
+MIT — See [LICENSE](./LICENSE).

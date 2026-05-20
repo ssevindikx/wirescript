@@ -1,19 +1,21 @@
 #!/usr/bin/env node
 /**
- * WireLang CLI - DSL<->DB conversions
+ * WireScript CLI - DSL<->DB conversions
  */
 
 import { promises as fs } from 'fs';
 import path from 'path';
 import * as runtime from './index';
-import { compileDslToDb, reverseDbToDsl, type WireLangDb } from './db';
+import { compileDslToDb, reverseDbToDsl, type WireScriptDb } from './db';
 import { Schematic } from './Schematic';
 
 function printUsage(): void {
   // Keep usage minimal and ASCII-only
   console.log('Usage:');
-  console.log('  wirelang dsl2db <input.js|input.dsl> [--export name] [--out output.json]');
-  console.log('  wirelang db2dsl <input.json> [--format dsl|ts] [--out output.dsl.js]');
+  console.log('  wirescript dsl2db <input.js|input.dsl> [--export name] [--out output.json]');
+  console.log('  wirescript compile <input.js|input.dsl> [--export name] [--out output.json]');
+  console.log('  wirescript db2dsl <input.json> [--format dsl|ts] [--import module] [--export name] [--out output.dsl.js]');
+  console.log('  wirescript decompile <input.json> [--format dsl|ts] [--import module] [--export name] [--out output.dsl.js]');
 }
 
 function getArgValue(args: string[], flag: string): string | undefined {
@@ -96,7 +98,7 @@ async function run(): Promise<void> {
     process.exit(1);
   }
 
-  if (command === 'dsl2db') {
+  if (command === 'dsl2db' || command === 'compile') {
     const inputPath = args[1];
     if (!inputPath) {
       printUsage();
@@ -117,7 +119,7 @@ async function run(): Promise<void> {
     return;
   }
 
-  if (command === 'db2dsl') {
+  if (command === 'db2dsl' || command === 'decompile') {
     const inputPath = args[1];
     if (!inputPath) {
       printUsage();
@@ -125,12 +127,18 @@ async function run(): Promise<void> {
     }
     const outputPath = getArgValue(args, '--out');
     const format = getArgValue(args, '--format') ?? 'dsl';
+    const moduleImport = getArgValue(args, '--import');
+    const exportName = getArgValue(args, '--export');
     if (format !== 'dsl' && format !== 'ts') {
       throw new Error(`Invalid format: ${format}. Use --format dsl|ts`);
     }
     const raw = await fs.readFile(inputPath, 'utf-8');
-    const db = JSON.parse(raw) as WireLangDb;
-    const dsl = reverseDbToDsl(db, { format });
+    const db = JSON.parse(raw) as WireScriptDb;
+    const dsl = reverseDbToDsl(db, {
+      format,
+      ...(moduleImport ? { moduleImport } : {}),
+      ...(exportName ? { exportName } : {}),
+    });
 
     if (outputPath) {
       await fs.writeFile(outputPath, dsl, 'utf-8');
