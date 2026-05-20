@@ -381,7 +381,7 @@ function buildComponentExpression(component: DbComponent): { expression: string;
 }
 
 function renderTypeScriptFromDb(db: WireScriptDb, options: DbToDslOptions = {}): string {
-  const moduleImport = options.moduleImport ?? 'wirescript';
+  const moduleImport = options.moduleImport ?? '@ssevindikx/wirescript';
   const exportName = options.exportName ?? 'default';
   const preserveIds = options.preserveIds ?? true;
 

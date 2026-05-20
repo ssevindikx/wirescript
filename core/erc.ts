@@ -10,7 +10,7 @@
  *   INFO    — design quality observation
  *
  * Usage:
- *   import { runERC } from 'wirescript';
+ *   import { runERC } from '@ssevindikx/wirescript';
  *   const result = runERC(schematic);
  *   console.log(result.summary());
  */

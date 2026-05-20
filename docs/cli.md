@@ -40,7 +40,7 @@ The input file must export a `Schematic` as its default export:
 
 ```ts
 // my-circuit.ts
-import { Circuit, DC, R, LED, GND, RED } from 'wirescript';
+import { Circuit, DC, R, LED, GND, RED } from '@ssevindikx/wirescript';
 export default Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 ```
 
@@ -69,7 +69,7 @@ wirescript decompile circuit.json --format dsl
 ```sh
 wirescript decompile circuit.json --format ts --export myCircuit
 # Output:
-# import { R, LED, GND, DC, createSchematic, ... } from 'wirescript';
+# import { R, LED, GND, DC, createSchematic, ... } from '@ssevindikx/wirescript';
 # const s = createSchematic("LED Driver");
 # ...
 # export const myCircuit = s;
@@ -93,7 +93,7 @@ wirescript compile circuit.ts | wirescript decompile /dev/stdin --format ts
 The CLI functions are also available as a library:
 
 ```ts
-import { compileDslToDb, reverseDbToDsl } from 'wirescript';
+import { compileDslToDb, reverseDbToDsl } from '@ssevindikx/wirescript';
 ```
 
 See [Serialization](./serialization.md) for full API details.

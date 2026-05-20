@@ -9,13 +9,13 @@ A **code-first DSL** for describing electronic circuits in TypeScript.
 ## Install
 
 ```sh
-npm install wirescript
+npm install @ssevindikx/wirescript
 ```
 
 ## Quick Start
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirescript';
+import { Circuit, DC, R, LED, GND, RED, runERC } from '@ssevindikx/wirescript';
 
 // Describe the circuit
 const circuit = Circuit('LED Driver',

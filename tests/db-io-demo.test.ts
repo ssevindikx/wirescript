@@ -27,7 +27,7 @@ describe('DB <-> DSL IO Demo', () => {
       nodes: dbOutput.nodes,
     };
 
-    const dslOutput = reverseDbToDsl(dbInput, { moduleImport: '@wirescript/core', format: 'dsl' });
+    const dslOutput = reverseDbToDsl(dbInput, { moduleImport: '@ssevindikx/wirescript', format: 'dsl' });
 
     console.log('\n[DB -> DSL] INPUT DB JSON');
     console.log(JSON.stringify(dbInput, null, 2));

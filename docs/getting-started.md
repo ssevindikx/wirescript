@@ -3,7 +3,7 @@
 ## Installation
 
 ```sh
-npm install wirescript
+npm install @ssevindikx/wirescript
 ```
 
 ## Requirements
@@ -18,7 +18,7 @@ npm install wirescript
 ### DSL style (recommended)
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED, runERC } from 'wirescript';
+import { Circuit, DC, R, LED, GND, RED, runERC } from '@ssevindikx/wirescript';
 
 // Describe the circuit
 const circuit = Circuit('LED Driver',
@@ -43,7 +43,7 @@ console.log(erc.summary()); // ✅ ERC passed — no violations found.
 ### TypeScript style (full control)
 
 ```ts
-import { createSchematic, DC, R, LED, GND, RED } from 'wirescript';
+import { createSchematic, DC, R, LED, GND, RED } from '@ssevindikx/wirescript';
 
 const s = createSchematic('LED Driver');
 

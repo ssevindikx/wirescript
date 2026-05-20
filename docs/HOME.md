@@ -29,7 +29,7 @@ WireScript offers two equivalent ways to describe circuits:
 Declarative, concise. Best for most use cases.
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED } from 'wirescript';
+import { Circuit, DC, R, LED, GND, RED } from '@ssevindikx/wirescript';
 
 const circuit = Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 ```
@@ -38,7 +38,7 @@ const circuit = Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 Imperative, explicit node/pin management. Best for complex topologies.
 
 ```ts
-import { createSchematic, DC, R, LED, GND, RED } from 'wirescript';
+import { createSchematic, DC, R, LED, GND, RED } from '@ssevindikx/wirescript';
 
 const s = createSchematic('LED Driver');
 const src = DC(5), r = R(330), led = LED(RED), gnd = GND();

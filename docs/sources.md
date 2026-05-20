@@ -19,7 +19,7 @@ Power rails (convenience factories)
 Usage Example
 
 ```ts
-import { Circuit, DC, VCC, VNEG, R, GND } from 'wirescript';
+import { Circuit, DC, VCC, VNEG, R, GND } from '@ssevindikx/wirescript';
 
 const s = Circuit('Simple', [
   [VCC(9), R(1000), GND()]

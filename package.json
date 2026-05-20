@@ -1,5 +1,5 @@
 {
-  "name": "wirescript",
+  "name": "@ssevindikx/wirescript",
   "version": "0.2.1-alpha.0",
   "description": "A code-first DSL for describing electronic circuits",
   "main": "./dist/index.js",

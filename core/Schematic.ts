@@ -337,7 +337,7 @@ export class Schematic {
   erc(options?: ERCOptions): ERCResult {
     if (!Schematic._ercRunner) {
       throw new Error(
-        'ERC engine not registered. Import "wirescript/erc" or call registerERC() first.',
+        'ERC engine not registered. Import "@ssevindikx/wirescript/erc" or call registerERC() first.',
       );
     }
     return Schematic._ercRunner(this, options);

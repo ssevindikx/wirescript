@@ -43,7 +43,7 @@ interface DbNode {
 ## `compileDslToDb(schematic)` — DSL → DB
 
 ```ts
-import { Circuit, DC, R, LED, GND, RED, compileDslToDb } from 'wirescript';
+import { Circuit, DC, R, LED, GND, RED, compileDslToDb } from '@ssevindikx/wirescript';
 
 const circuit = Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 const db = compileDslToDb(circuit);
@@ -66,7 +66,7 @@ The resulting object is fully JSON-serializable — no circular references.
 Converts a `WireScriptDb` object back into runnable source code.
 
 ```ts
-import { reverseDbToDsl } from 'wirescript';
+import { reverseDbToDsl } from '@ssevindikx/wirescript';
 
 const code = reverseDbToDsl(db);
 // Returns plain DSL code string by default:
@@ -122,7 +122,7 @@ const code = reverseDbToDsl(db, {
 ```
 
 ```ts
-import { R, LED, GND, createSchematic, applyComponentIdentity, applyNodeIdentity } from 'wirescript';
+import { R, LED, GND, createSchematic, applyComponentIdentity, applyNodeIdentity } from '@ssevindikx/wirescript';
 
 const s = createSchematic("LED Driver");
 
@@ -144,8 +144,8 @@ export const ledCircuit = s;
 
 ```ts
 // All four aliases are equivalent:
-import { compileDslToDb, dslToDb, dsl2db }   from 'wirescript'; // DSL → DB
-import { reverseDbToDsl, dbToDsl, db2dsl }   from 'wirescript'; // DB → DSL
+import { compileDslToDb, dslToDb, dsl2db }   from '@ssevindikx/wirescript'; // DSL → DB
+import { reverseDbToDsl, dbToDsl, db2dsl }   from '@ssevindikx/wirescript'; // DB → DSL
 ```
 
 ---
@@ -153,7 +153,7 @@ import { reverseDbToDsl, dbToDsl, db2dsl }   from 'wirescript'; // DB → DSL
 ## Round-trip example
 
 ```ts
-import { Circuit, DC, R, GND, compileDslToDb, reverseDbToDsl } from 'wirescript';
+import { Circuit, DC, R, GND, compileDslToDb, reverseDbToDsl } from '@ssevindikx/wirescript';
 
 // Build
 const original = Circuit('Test', DC(5), R(1000), GND());
@@ -177,7 +177,7 @@ console.log(code);
 When `preserveIds: true` (default), the generated TypeScript includes `applyComponentIdentity` calls that restore the original IDs and labels. This ensures that component references remain stable across save/load cycles — critical for tools that store component IDs (e.g. WireScript Studio).
 
 ```ts
-import { applyComponentIdentity, applyNodeIdentity } from 'wirescript';
+import { applyComponentIdentity, applyNodeIdentity } from '@ssevindikx/wirescript';
 
 applyComponentIdentity(myComponent, {
   id: 'resistor_7',

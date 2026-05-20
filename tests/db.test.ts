@@ -127,7 +127,7 @@ describe('DB Transforms', () => {
     applyToCircuit(s, result);
 
     const db = compileDslToDb(s);
-    const dsl = reverseDbToDsl(db, { moduleImport: '@wirescript/core' });
+    const dsl = reverseDbToDsl(db, { moduleImport: '@ssevindikx/wirescript' });
 
     const runtimeScope: Record<string, unknown> = { ...core };
     const baseCircuit = core.Circuit;
