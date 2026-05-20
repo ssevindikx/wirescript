@@ -1,21 +1,28 @@
 {
   "name": "wirescript",
-  "version": "0.1.0",
+  "version": "0.2.1-alpha.0",
   "description": "A code-first DSL for describing electronic circuits",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./erc": {
       "types": "./dist/erc.d.ts",
+      "require": "./dist/erc.js",
+      "import": "./dist/erc.js",
       "default": "./dist/erc.js"
     }
   },
   "bin": {
     "wirescript": "./dist/cli.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "dist",
@@ -29,6 +36,7 @@
     "example": "node run-examples.js",
     "test": "vitest run",
     "test:watch": "vitest",
+    "prepublishOnly": "npm test",
     "prepare": "npm run build"
   },
   "keywords": [
@@ -37,7 +45,7 @@
     "electronics",
     "eda"
   ],
-  "author": "",
+  "author": "Samet Sevindik",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^25.0.8",
