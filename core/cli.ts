@@ -1,21 +1,29 @@
 #!/usr/bin/env node
 /**
- * WireScript CLI - DSL<->DB conversions
+ * WireScript CLI - DSL<->DB conversions & Netlist import/export
  */
 
 import { promises as fs } from 'fs';
 import path from 'path';
 import * as runtime from './index';
 import { compileDslToDb, reverseDbToDsl, type WireScriptDb } from './db';
+import { exportNetlist, importNetlist, type NetlistFormat } from './netlist';
 import { Schematic } from './Schematic';
 
 function printUsage(): void {
-  // Keep usage minimal and ASCII-only
   console.log('Usage:');
-  console.log('  wirescript dsl2db <input.js|input.dsl> [--export name] [--out output.json]');
-  console.log('  wirescript compile <input.js|input.dsl> [--export name] [--out output.json]');
-  console.log('  wirescript db2dsl <input.json> [--format dsl|ts] [--import module] [--export name] [--out output.dsl.js]');
-  console.log('  wirescript decompile <input.json> [--format dsl|ts] [--import module] [--export name] [--out output.dsl.js]');
+  console.log('  wirescript compile      <input.js|input.dsl>  [--export name] [--out output.json]');
+  console.log('  wirescript dsl2db       <input.js|input.dsl>  [--export name] [--out output.json]');
+  console.log('  wirescript decompile    <input.json>          [--format dsl|ts] [--import module] [--export name] [--out output.dsl.js]');
+  console.log('  wirescript db2dsl       <input.json>          [--format dsl|ts] [--import module] [--export name] [--out output.dsl.js]');
+  console.log('  wirescript to-netlist   <input.json|input.js> [--format spice|ws-csv] [--title "..."] [--out output.net]');
+  console.log('  wirescript from-netlist <input.net|input.csv> [--format spice|ws-csv] [--name "..."] [--out output.json]');
+  console.log('');
+  console.log('Aliases:');
+  console.log('  compile     = dsl2db');
+  console.log('  decompile   = db2dsl');
+  console.log('  to-netlist  = netlist (db/dsl -> netlist)');
+  console.log('  from-netlist = import-netlist (netlist -> db)');
 }
 
 function getArgValue(args: string[], flag: string): string | undefined {
@@ -24,6 +32,10 @@ function getArgValue(args: string[], flag: string): string | undefined {
     return undefined;
   }
   return args[index + 1];
+}
+
+function hasFlag(args: string[], flag: string): boolean {
+  return args.includes(flag);
 }
 
 async function loadSchematic(modulePath: string, exportName?: string): Promise<Schematic> {
@@ -89,21 +101,25 @@ function evaluatePlainDsl(source: string, filePath: string): Schematic {
   return captured;
 }
 
+/** Detect whether a path is a DB JSON file or a DSL/TS module */
+function isDbJsonPath(filePath: string): boolean {
+  return /\.(json)$/i.test(filePath);
+}
+
 async function run(): Promise<void> {
   const args = process.argv.slice(2);
   const command = args[0];
 
-  if (!command) {
+  if (!command || hasFlag(args, '--help') || hasFlag(args, '-h')) {
     printUsage();
-    process.exit(1);
+    if (!command) process.exit(1);
+    return;
   }
 
+  // ── DSL → DB ──────────────────────────────────────────────────────────────
   if (command === 'dsl2db' || command === 'compile') {
     const inputPath = args[1];
-    if (!inputPath) {
-      printUsage();
-      process.exit(1);
-    }
+    if (!inputPath) { printUsage(); process.exit(1); }
 
     const exportName = getArgValue(args, '--export');
     const outputPath = getArgValue(args, '--out');
@@ -113,25 +129,27 @@ async function run(): Promise<void> {
 
     if (outputPath) {
       await fs.writeFile(outputPath, json, 'utf-8');
+      console.error(`Wrote DB JSON to ${outputPath}`);
     } else {
       console.log(json);
     }
     return;
   }
 
+  // ── DB → DSL ──────────────────────────────────────────────────────────────
   if (command === 'db2dsl' || command === 'decompile') {
     const inputPath = args[1];
-    if (!inputPath) {
-      printUsage();
-      process.exit(1);
-    }
+    if (!inputPath) { printUsage(); process.exit(1); }
+
     const outputPath = getArgValue(args, '--out');
     const format = getArgValue(args, '--format') ?? 'dsl';
     const moduleImport = getArgValue(args, '--import');
     const exportName = getArgValue(args, '--export');
+
     if (format !== 'dsl' && format !== 'ts') {
       throw new Error(`Invalid format: ${format}. Use --format dsl|ts`);
     }
+
     const raw = await fs.readFile(inputPath, 'utf-8');
     const db = JSON.parse(raw) as WireScriptDb;
     const dsl = reverseDbToDsl(db, {
@@ -142,8 +160,76 @@ async function run(): Promise<void> {
 
     if (outputPath) {
       await fs.writeFile(outputPath, dsl, 'utf-8');
+      console.error(`Wrote DSL to ${outputPath}`);
     } else {
       console.log(dsl);
+    }
+    return;
+  }
+
+  // ── DSL/DB → Netlist ──────────────────────────────────────────────────────
+  if (command === 'to-netlist' || command === 'netlist') {
+    const inputPath = args[1];
+    if (!inputPath) { printUsage(); process.exit(1); }
+
+    const outputPath  = getArgValue(args, '--out');
+    const format      = (getArgValue(args, '--format') ?? 'spice') as NetlistFormat;
+    const title       = getArgValue(args, '--title');
+    const exportName  = getArgValue(args, '--export');
+
+    if (format !== 'spice' && format !== 'ws-csv') {
+      throw new Error(`Invalid netlist format: ${format}. Use --format spice|ws-csv`);
+    }
+
+    let db: WireScriptDb;
+    if (isDbJsonPath(inputPath)) {
+      const raw = await fs.readFile(inputPath, 'utf-8');
+      db = JSON.parse(raw) as WireScriptDb;
+    } else {
+      // Treat as DSL/TS module
+      const schematic = await loadSchematic(inputPath, exportName);
+      db = compileDslToDb(schematic);
+    }
+
+    const netlist = exportNetlist(db, {
+      format,
+      ...(title ? { title } : {}),
+    });
+
+    if (outputPath) {
+      await fs.writeFile(outputPath, netlist, 'utf-8');
+      console.error(`Wrote ${format} netlist to ${outputPath}`);
+    } else {
+      console.log(netlist);
+    }
+    return;
+  }
+
+  // ── Netlist → DB ──────────────────────────────────────────────────────────
+  if (command === 'from-netlist' || command === 'import-netlist') {
+    const inputPath = args[1];
+    if (!inputPath) { printUsage(); process.exit(1); }
+
+    const outputPath = getArgValue(args, '--out');
+    const format     = getArgValue(args, '--format') as NetlistFormat | undefined;
+    const name       = getArgValue(args, '--name');
+
+    if (format && format !== 'spice' && format !== 'ws-csv') {
+      throw new Error(`Invalid netlist format: ${format}. Use --format spice|ws-csv`);
+    }
+
+    const src = await fs.readFile(inputPath, 'utf-8');
+    const db = importNetlist(src, {
+      ...(format ? { format } : {}),
+      ...(name   ? { name }   : {}),
+    });
+
+    const json = JSON.stringify(db, null, 2);
+    if (outputPath) {
+      await fs.writeFile(outputPath, json, 'utf-8');
+      console.error(`Wrote DB JSON to ${outputPath}`);
+    } else {
+      console.log(json);
     }
     return;
   }

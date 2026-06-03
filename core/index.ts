@@ -73,6 +73,20 @@ export {
   type DbPin,
   type DbToDslOptions,
 } from './db';
+
+// Netlist import / export
+export {
+  exportNetlist,
+  importNetlist,
+  dbToNetlist,
+  netlistToDb,
+  db2netlist,
+  netlist2db,
+  type NetlistFormat,
+  type NetlistExportOptions,
+  type NetlistImportOptions,
+  type NetlistEntry,
+} from './netlist';
 export {
   applyComponentIdentity,
   applyNodeIdentity,

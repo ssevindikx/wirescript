@@ -16,6 +16,7 @@ Its only job: *"which pin is connected to which node, and what is this component
 | [Units](./units.md) | SI prefix helpers — `kOhm`, `uF`, `MHz`, etc. |
 | [ERC](./erc.md) | Electrical Rule Check — physics-based static validation |
 | [Serialization](./serialization.md) | DB layer, JSON IR, DSL ↔ DB round-trip |
+| [Netlist](./netlist.md) | Netlist import/export — SPICE & WireScript CSV formats |
 | [CLI](./cli.md) | Command-line interface reference |
 | [Examples](./examples.md) | Ready-to-run circuit examples |
 
