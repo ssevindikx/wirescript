@@ -1,33 +1,33 @@
-# Import / Export — Format Dönüşüm Kılavuzu
+# Import / Export — Format Conversion Guide
 
-WireScript **üç exchange formatını** destekler ve tüm dönüşümler **DB (omurga)** üzerinden gerçekleşir.
+WireScript supports **three exchange formats**. All conversions go through the **DB backbone**.
 
 ---
 
-## Üç Format, Bir Omurga
+## Three Formats, One Backbone
 
 ```
 ┌──────────────────┐         ┌───────────────────────────────┐         ┌──────────────────┐
-│   .ws dosyası    │  ◄────►  │       WireScriptDb (IR)       │  ◄────►  │   .net dosyası   │
-│ (WireScript DSL) │         │     ← O M U R G A →           │         │ (SPICE Netlist)  │
+│   .ws file       │  ◄────►  │       WireScriptDb (IR)       │  ◄────►  │   .net file      │
+│ (WireScript DSL) │         │         ← BACKBONE →          │         │ (SPICE Netlist)  │
 └──────────────────┘         └───────────────┬───────────────┘         └──────────────────┘
                                              │
                                    ┌─────────▼──────────┐
-                                   │  .json  veya  .csv  │
-                                   │  (DB depolama)      │
+                                   │  .json  or  .csv   │
+                                   │  (DB storage)      │
                                    └────────────────────┘
 ```
 
-| Format | Uzantı | Açıklama |
+| Format | Extension | Description |
 |---|---|---|
-| **WireScript DSL** | `.ws` | İnsan-okunabilir, `Circuit()` sözdizimi |
-| **SPICE Netlist** | `.net`, `.cir`, `.sp` | LTspice, ngspice, KiCad uyumlu |
-| **Database (JSON)** | `.json` | Tam fidelity, makine dostu |
-| **Database (CSV)** | `.csv` | Okunabilir, sektörel araçlara açık |
+| **WireScript DSL** | `.ws` | Human-readable, `Circuit()` syntax |
+| **SPICE Netlist** | `.net`, `.cir`, `.sp` | Compatible with LTspice, ngspice, KiCad |
+| **Database (JSON)** | `.json` | Full fidelity, machine-friendly |
+| **Database (CSV)** | `.csv` | Readable, interoperable with external tools |
 
 ---
 
-## API Referansı
+## API Reference
 
 ### WireScript DSL (`.ws`) ↔ DB
 
@@ -43,9 +43,9 @@ const db = importWs(wsSource);
 const db = importWs(wsSource, { name: 'My Circuit' });
 ```
 
-**`.ws` dosya formatı:**
+**`.ws` file example:**
 ```
-// Başlık yorumu (opsiyonel)
+// Optional header comment
 
 V1 = DC(5)
 R1 = R(1000)
@@ -62,7 +62,7 @@ Circuit(
 )
 ```
 
-> **Kural:** `.ws` dosyaları `import`/`export`/`require` içeremez. Sadece saf WireScript DSL sözdizimi.
+> **Rule:** `.ws` files must not contain `import`/`export`/`require`. Plain WireScript DSL syntax only.
 
 ---
 
@@ -82,26 +82,26 @@ const db = importNetlist(spiceSource, { name: 'Imported Circuit' });
 
 ---
 
-### DB Depolama (JSON / CSV) ↔ DB
+### DB Storage (JSON / CSV) ↔ DB
 
 ```ts
 import { serializeDb, deserializeDb } from '@ssevindikx/wirescript';
 
-// DB → JSON (varsayılan)
+// DB → JSON (default)
 const json = serializeDb(db);
 const json = serializeDb(db, { format: 'json', indent: 2 });
 
 // DB → CSV
 const csv = serializeDb(db, { format: 'csv' });
 
-// JSON veya CSV → DB (format otomatik algılanır)
+// JSON or CSV → DB (format auto-detected)
 const db = deserializeDb(jsonOrCsvString);
 const db = deserializeDb(src, { format: 'csv' });
 ```
 
 ---
 
-### Tüm Alias'lar
+### All Aliases
 
 ```ts
 // WireScript DSL
@@ -112,18 +112,18 @@ importWs  = wsToDb  = ws2db   // .ws → DB
 exportNetlist = dbToNetlist = db2netlist  // DB → netlist
 importNetlist = netlistToDb = netlist2db  // netlist → DB
 
-// DSL/TS kod üretimi (TypeScript modülü)
+// DSL/TS code generation (TypeScript module)
 compileDslToDb  = dslToDb = dsl2db  // Schematic → DB
-reverseDbToDsl  = dbToDsl = db2dsl  // DB → kod string
+reverseDbToDsl  = dbToDsl = db2dsl  // DB → code string
 ```
 
 ---
 
-## Dönüşüm Yolları
+## Conversion Paths
 
-Tüm yollar DB omurgasından geçer:
+All paths flow through the DB backbone:
 
-| Kaynak | Hedef | Yol |
+| Source | Target | Path |
 |---|---|---|
 | `.ws` | `.net` | ws → **DB** → netlist |
 | `.net` | `.ws` | netlist → **DB** → ws |
@@ -134,49 +134,49 @@ Tüm yollar DB omurgasından geçer:
 | `.json` | `.csv` | JSON → **DB** → CSV |
 | `.csv` | `.ws` | CSV → **DB** → ws |
 
-### Kod örnekleri
+### Code examples
 
 ```ts
 import {
-  importWs, exportNetlist,   // ws → netlist
-  importNetlist, exportWs,   // netlist → ws
+  importWs, exportNetlist,    // ws → netlist
+  importNetlist, exportWs,    // netlist → ws
   serializeDb, deserializeDb, // DB storage
 } from '@ssevindikx/wirescript';
 
 // ws → netlist
 const wsSource = await fs.readFile('circuit.ws', 'utf-8');
-const db = importWs(wsSource);           // ws → DB
-const spice = exportNetlist(db);          // DB → netlist
+const db    = importWs(wsSource);       // ws → DB
+const spice = exportNetlist(db);         // DB → netlist
 
 // netlist → ws
 const netSource = await fs.readFile('circuit.net', 'utf-8');
-const db2 = importNetlist(netSource);     // netlist → DB
-const ws = exportWs(db2);                 // DB → ws
+const db2 = importNetlist(netSource);    // netlist → DB
+const ws  = exportWs(db2);              // DB → ws
 
 // JSON → CSV
-const db3 = deserializeDb(jsonString);    // JSON → DB
+const db3 = deserializeDb(jsonString);           // JSON → DB
 const csv = serializeDb(db3, { format: 'csv' }); // DB → CSV
 ```
 
 ---
 
-## CLI — Komut Satırı
+## CLI — Command Line
 
-CLI'da tüm dönüşümler `convert` komutu ile veya kısa form komutlarla yapılabilir.
+Use the `convert` command or shorthand commands for all format conversions.
 
-### `convert` — Evrensel Dönüştürücü
+### `convert` — Universal Converter
 
 ```sh
 wirescript convert <input> --to <format> [--out <file>]
 ```
 
-| `--to` | Çıktı |
+| `--to` | Output |
 |---|---|
 | `ws` | WireScript DSL (.ws) |
 | `netlist` | SPICE netlist (.net) |
 | `db` | DB JSON (.json) |
 | `db-csv` | DB CSV (.csv) |
-| `ts` | TypeScript modülü |
+| `ts` | TypeScript module |
 
 ```sh
 # .ws → SPICE netlist
@@ -194,11 +194,11 @@ wirescript convert circuit.json --to db-csv --out circuit.db.csv
 # .csv → .ws
 wirescript convert circuit.db.csv --to ws --out circuit.ws
 
-# Format zorla belirt (--from)
+# Force input format (--from)
 wirescript convert circuit.txt --from netlist --to ws
 ```
 
-### Kısa Form Komutlar
+### Shorthand Commands
 
 ```sh
 wirescript to-ws       <input>         [--out file.ws]
@@ -210,19 +210,19 @@ wirescript compile     <input.ts|.ws>  [--out file.json]
 wirescript decompile   <input.json>    [--format ws|ts]
 ```
 
-### Pipeline Örnekleri
+### Pipeline Examples
 
 ```sh
-# .ws → SPICE → DB → .ws (tam döngü)
+# .ws → SPICE → DB → .ws (full round-trip)
 wirescript convert circuit.ws --to netlist \
   | wirescript convert /dev/stdin --from netlist --to db \
   | wirescript convert /dev/stdin --from db --to ws
 
-# .ts modülü → netlist
-wirescript compile circuit.ts --out circuit.json
+# .ts module → netlist
+wirescript compile my-circuit.ts --out circuit.json
 wirescript to-netlist circuit.json --out circuit.net
 
-# Birleştirerek:
+# Combined:
 wirescript compile circuit.ts | wirescript to-netlist /dev/stdin --out circuit.net
 
 # Netlist → WireScript DSL
@@ -231,16 +231,16 @@ wirescript from-netlist circuit.net | wirescript to-ws /dev/stdin --out circuit.
 
 ---
 
-## CLI Komut Tablosu
+## Command Summary Table
 
-| Komut | Alias | Giriş | Çıkış |
+| Command | Alias | Input | Output |
 |---|---|---|---|
-| `convert --to ws` | `to-ws` | herhangi | `.ws` |
-| `convert --to netlist` | `to-netlist` | herhangi | `.net` |
-| `convert --to db` | `to-db` | herhangi | `.json` |
-| `convert --to db-csv` | — | herhangi | `.csv` |
-| `convert --to ts` | — | herhangi | `.ts` |
+| `convert --to ws` | `to-ws` | any | `.ws` |
+| `convert --to netlist` | `to-netlist` | any | `.net` |
+| `convert --to db` | `to-db` | any | `.json` |
+| `convert --to db-csv` | — | any | `.csv` |
+| `convert --to ts` | — | any | `.ts` |
 | `compile` | `dsl2db` | `.ts`/`.ws` | `.json` |
-| `decompile` | `db2dsl` | `.json` | `.ws`/`.ts` |
+| `decompile` | `db2dsl` | `.json`/`.csv` | `.ws`/`.ts` |
 | `from-ws` | — | `.ws` | `.json` |
 | `from-netlist` | `import-netlist` | `.net` | `.json` |

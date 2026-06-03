@@ -1,28 +1,28 @@
 # WireScript DSL Format (`.ws`)
 
-`.ws` dosyaları WireScript'in doğal, insan-okunabilir devre tanımlama formatıdır.  
-Saf `Circuit()` DSL sözdizimi kullanır — `import`/`export` yoktur.
+`.ws` files are WireScript's native, human-readable circuit description format.  
+They use plain `Circuit()` DSL syntax — no `import`/`export` statements.
 
 ---
 
-## Dosya Yapısı
+## File Structure
 
 ```
-// Opsiyonel başlık yorumları
+// Optional header comments
 
-<bileşen_adı> = <fabrika_fonksiyonu>
+<component_var> = <factory_function>
 ...
 
 Circuit(
-  "<devre_adı>",
+  "<circuit_name>",
   [
-    [<pin1>, <pin2>, ...],   // Aynı düğüme bağlı pinler
+    [<pin1>, <pin2>, ...],   // Pins connected to the same node
     ...
   ]
 )
 ```
 
-### Örnek: LED Sürücüsü
+### Example: LED Driver
 
 ```ws
 // LED Driver Circuit
@@ -43,7 +43,7 @@ Circuit(
 )
 ```
 
-### Örnek: NPN Transistör Anahtarı
+### Example: NPN Transistor Switch
 
 ```ws
 V1 = DC(5)
@@ -69,16 +69,16 @@ Circuit(
 
 ---
 
-## Kurallar
+## Rules
 
-| Kural | Açıklama |
+| Rule | Description |
 |---|---|
-| ✅ `Circuit(...)` zorunlu | Her `.ws` dosyası en az bir `Circuit()` çağrısı içermeli |
-| ✅ Tüm bileşen fabrikaları kullanılabilir | `R()`, `C()`, `DC()`, `NPN()`, `OpAmp()` vb. |
-| ✅ Yorum satırları `//` | Standart JS yorum sözdizimi |
-| ❌ `import` yasak | `.ws` dosyaları modül sözdizimi içeremez |
-| ❌ `export` yasak | Çıktı doğrudan `Circuit()` çağrısından alınır |
-| ❌ `require()` yasak | Sadece saf DSL sözdizimi |
+| ✅ `Circuit(...)` required | Every `.ws` file must contain at least one `Circuit()` call |
+| ✅ All component factories available | `R()`, `C()`, `DC()`, `NPN()`, `OpAmp()`, etc. |
+| ✅ Line comments with `//` | Standard JS comment syntax |
+| ❌ No `import` | `.ws` files must not contain module syntax |
+| ❌ No `export` | Output is taken directly from the `Circuit()` call |
+| ❌ No `require()` | Plain DSL syntax only |
 
 ---
 
@@ -127,11 +127,11 @@ import { dbToWs, wsToDb, db2ws, ws2db } from '@ssevindikx/wirescript';
 ## CLI
 
 ```sh
-# herhangi bir formattan .ws üret
+# Generate .ws from any format
 wirescript convert circuit.json --to ws --out circuit.ws
 wirescript convert circuit.net --to ws --out circuit.ws
 
-# kısa form
+# Shorthand
 wirescript to-ws circuit.json --out circuit.ws
 wirescript to-ws circuit.net
 
@@ -146,17 +146,17 @@ wirescript convert circuit.ws --to netlist --out circuit.net
 
 ## Round-trip
 
-`.ws` formatı tam round-trip destekler:
+The `.ws` format supports full round-trips:
 
 ```ts
 import { Circuit, DC, R, GND, compileDslToDb, exportWs, importWs } from '@ssevindikx/wirescript';
 
-// Orijinal devre
+// Original circuit
 const circuit = Circuit('Test', DC(5), R(1000), GND());
 const original = compileDslToDb(circuit);
 
 // DB → .ws → DB
-const wsCode = exportWs(original);
+const wsCode  = exportWs(original);
 const rebuilt = importWs(wsCode);
 
 console.log(rebuilt.components.length === original.components.length); // true
@@ -165,4 +165,4 @@ console.log(rebuilt.name === original.name);                           // true
 
 ---
 
-Daha fazla bilgi için [IO Kılavuzu](./io.md) ve [CLI Referansı](./cli.md).
+See [IO & Formats](./io.md) and [CLI Reference](./cli.md) for more.
