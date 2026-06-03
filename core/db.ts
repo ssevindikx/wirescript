@@ -583,3 +583,229 @@ export const dslToDb = compileDslToDb;
 export const dbToDsl = reverseDbToDsl;
 export const dsl2db = compileDslToDb;
 export const db2dsl = reverseDbToDsl;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DB Serialization — JSON and CSV storage formats
+// These are for storing/loading the DB itself, NOT for netlist or DSL output.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Supported DB storage formats. */
+export type DbStorageFormat = 'json' | 'csv';
+
+/** Options for `serializeDb`. */
+export interface DbSerializeOptions {
+  /** Storage format (default: 'json'). */
+  format?: DbStorageFormat;
+  /** JSON indent spaces (default: 2, only for 'json' format). */
+  indent?: number;
+}
+
+/** Options for `deserializeDb`. */
+export interface DbDeserializeOptions {
+  /** Storage format (default: auto-detected from content). */
+  format?: DbStorageFormat;
+}
+
+// ── CSV helpers ───────────────────────────────────────────────────────────────
+
+function dbCsvEscape(s: string): string {
+  const str = s == null ? '' : String(s);
+  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function dbCsvParseLine(line: string): string[] {
+  const fields: string[] = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') { current += '"'; i++; }
+      else { inQuotes = !inQuotes; }
+    } else if (ch === ',' && !inQuotes) {
+      fields.push(current); current = '';
+    } else {
+      current += ch;
+    }
+  }
+  fields.push(current);
+  return fields;
+}
+
+/**
+ * Serialize a `WireScriptDb` to a CSV string.
+ *
+ * The CSV uses two section headers:
+ *   [meta]     — schema, name, optional meta keys
+ *   [nodes]    — one row per node
+ *   [components] — one row per component (pins encoded as JSON in the pins column)
+ *
+ * This is a DB storage format, not a netlist format.
+ */
+export function serializeDbCsv(db: WireScriptDb): string {
+  const rows: string[] = [];
+
+  // ── [meta] section ──
+  rows.push('[meta]');
+  rows.push('key,value');
+  rows.push(`schema,${dbCsvEscape(db.schema)}`);
+  rows.push(`name,${dbCsvEscape(db.name)}`);
+  if (db.meta) {
+    for (const [k, v] of Object.entries(db.meta)) {
+      rows.push(`${dbCsvEscape(k)},${dbCsvEscape(JSON.stringify(v))}`);
+    }
+  }
+  rows.push('');
+
+  // ── [nodes] section ──
+  rows.push('[nodes]');
+  rows.push('id,name,isGround');
+  for (const node of db.nodes) {
+    rows.push([
+      dbCsvEscape(node.id),
+      dbCsvEscape(node.name ?? ''),
+      dbCsvEscape(String(node.isGround ?? false)),
+    ].join(','));
+  }
+  rows.push('');
+
+  // ── [components] section ──
+  rows.push('[components]');
+  rows.push('id,type,label,params,pins,extras');
+  for (const comp of db.components) {
+    rows.push([
+      dbCsvEscape(comp.id),
+      dbCsvEscape(comp.type),
+      dbCsvEscape(comp.label ?? ''),
+      dbCsvEscape(JSON.stringify(comp.params)),
+      dbCsvEscape(JSON.stringify(comp.pins)),
+      dbCsvEscape(comp.extras ? JSON.stringify(comp.extras) : ''),
+    ].join(','));
+  }
+
+  return rows.join('\n');
+}
+
+/**
+ * Parse a DB CSV string (produced by `serializeDbCsv`) into a `WireScriptDb`.
+ */
+export function deserializeDbCsv(src: string): WireScriptDb {
+  const lines = src.split('\n');
+  let section = '';
+  let header: string[] = [];
+
+  const meta: Record<string, string> = {};
+  const nodes: DbNode[] = [];
+  const components: DbComponent[] = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) continue;
+
+    // Section header
+    if (line.startsWith('[') && line.endsWith(']')) {
+      section = line.slice(1, -1).toLowerCase();
+      header = [];
+      continue;
+    }
+
+    const cols = dbCsvParseLine(line);
+
+    // First line of a section is always the header row
+    if (header.length === 0) {
+      header = cols.map(c => c.trim().toLowerCase());
+      continue;
+    }
+
+    const col = (name: string) => cols[header.indexOf(name)] ?? '';
+
+    if (section === 'meta') {
+      meta[col('key')] = col('value');
+      continue;
+    }
+
+    if (section === 'nodes') {
+      const isGround = col('isground').toLowerCase() === 'true';
+      nodes.push({
+        id: col('id'),
+        name: col('name') || undefined,
+        isGround: isGround || undefined,
+      });
+      continue;
+    }
+
+    if (section === 'components') {
+      const paramsRaw = col('params');
+      const pinsRaw = col('pins');
+      const extrasRaw = col('extras');
+
+      let params: ComponentParams;
+      try { params = JSON.parse(paramsRaw) as ComponentParams; }
+      catch { params = { value: 0, unit: '' }; }
+
+      let pins: DbPin[];
+      try { pins = JSON.parse(pinsRaw) as DbPin[]; }
+      catch { pins = []; }
+
+      let extras: Record<string, unknown> | undefined;
+      if (extrasRaw) {
+        try { extras = JSON.parse(extrasRaw) as Record<string, unknown>; }
+        catch { extras = undefined; }
+      }
+
+      components.push({
+        id: col('id'),
+        type: col('type'),
+        label: col('label') || undefined,
+        params,
+        pins,
+        ...(extras ? { extras } : {}),
+      });
+      continue;
+    }
+  }
+
+  const schema = (meta['schema'] ?? 'wirescript-db@v1') as 'wirescript-db@v1';
+  const name   = meta['name'] ?? 'imported';
+
+  return { schema, name, components, nodes };
+}
+
+/**
+ * Serialize a `WireScriptDb` to a string.
+ *
+ * @param db      The database to serialize.
+ * @param options Storage format options.
+ * @returns A JSON or CSV string.
+ *
+ * @example
+ * const json = serializeDb(db);
+ * const csv  = serializeDb(db, { format: 'csv' });
+ */
+export function serializeDb(db: WireScriptDb, options: DbSerializeOptions = {}): string {
+  const format = options.format ?? 'json';
+  if (format === 'csv') {
+    return serializeDbCsv(db);
+  }
+  return JSON.stringify(db, null, options.indent ?? 2);
+}
+
+/**
+ * Deserialize a `WireScriptDb` from a JSON or CSV string.
+ *
+ * Format is auto-detected: content starting with `[meta]` → CSV, otherwise → JSON.
+ *
+ * @example
+ * const db = deserializeDb(jsonString);
+ * const db2 = deserializeDb(csvString, { format: 'csv' });
+ */
+export function deserializeDb(src: string, options: DbDeserializeOptions = {}): WireScriptDb {
+  const format = options.format ?? (src.trim().startsWith('[meta]') ? 'csv' : 'json');
+  if (format === 'csv') {
+    return deserializeDbCsv(src);
+  }
+  return JSON.parse(src) as WireScriptDb;
+}

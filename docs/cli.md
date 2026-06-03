@@ -1,29 +1,151 @@
 # CLI Reference
 
-The `wirescript` CLI provides command-line access to the DB serialization and netlist layers.
+WireScript CLI — **üç exchange formatı**, tek bir omurga (DB):
 
-## Installation
+```
+.ws (WireScript DSL)  ◄───►  WireScriptDb  ◄───►  .net (SPICE Netlist)
+                                   │
+                          .json / .csv (DB depolama)
+```
+
+## Kurulum
 
 ```sh
 npm install -g @ssevindikx/wirescript
-# or use via npx:
+# veya npx ile:
 npx wirescript <command>
 ```
 
 ---
 
-## Commands
+## `convert` — Evrensel Dönüştürücü
 
-### `compile` / `dsl2db` — DSL → DB JSON
-
-Compiles a TypeScript DSL file and outputs the `WireScriptDb` JSON.
+Tüm format dönüşümlerini tek komutla yap.
 
 ```sh
-wirescript compile <file.ts>
-wirescript compile circuit.ts --out circuit.json
+wirescript convert <input> --to <format> [options]
 ```
 
-The input file must export a `Schematic` as its default export:
+### `--to` değerleri
+
+| Değer | Çıktı formatı |
+|---|---|
+| `ws` | WireScript DSL (`.ws`) |
+| `netlist` | SPICE netlist (`.net`) |
+| `db` | DB JSON (`.json`) |
+| `db-csv` | DB CSV (`.csv`) |
+| `ts` | TypeScript modülü |
+
+### Seçenekler
+
+| Flag | Açıklama |
+|---|---|
+| `--to <format>` | Hedef format (zorunlu) |
+| `--from <format>` | Kaynak format zorla belirt (opsiyonel, genellikle otomatik algılanır) |
+| `--out <file>` | Çıktıyı dosyaya yaz (varsayılan: stdout) |
+| `--name <name>` | Şematik adını geçersiz kıl |
+| `--title <title>` | SPICE netlist başlık yorumu |
+| `--export <name>` | TypeScript modülü export adı |
+| `--import <path>` | TypeScript modülü import yolu |
+
+### Örnekler
+
+```sh
+# .ws → SPICE netlist
+wirescript convert circuit.ws --to netlist --out circuit.net
+
+# SPICE netlist → .ws
+wirescript convert circuit.net --to ws --out circuit.ws
+
+# .ws → DB JSON
+wirescript convert circuit.ws --to db --out circuit.json
+
+# .json → DB CSV
+wirescript convert circuit.json --to db-csv --out circuit.db.csv
+
+# .csv → .ws
+wirescript convert circuit.db.csv --to ws
+
+# .ts modülü → netlist (doğrudan, ara JSON olmadan)
+wirescript convert my-circuit.ts --to netlist --out circuit.net
+
+# Format zorla (içeriğe göre otomatik algılanamıyorsa)
+wirescript convert circuit.txt --from netlist --to ws
+```
+
+---
+
+## Kısa Form Komutlar
+
+### `to-ws` — Herhangi bir format → `.ws`
+
+```sh
+wirescript to-ws <input> [--out file.ws] [--name "..."]
+```
+
+```sh
+wirescript to-ws circuit.json
+wirescript to-ws circuit.net --out circuit.ws
+wirescript to-ws circuit.db.csv
+```
+
+### `from-ws` — `.ws` → DB JSON
+
+```sh
+wirescript from-ws <input.ws> [--out file.json]
+```
+
+```sh
+wirescript from-ws circuit.ws
+wirescript from-ws circuit.ws --out circuit.json
+```
+
+### `to-netlist` — Herhangi bir format → SPICE netlist
+
+```sh
+wirescript to-netlist <input> [--out file.net] [--title "..."]
+```
+
+```sh
+wirescript to-netlist circuit.json --out circuit.net
+wirescript to-netlist circuit.ws --title "LED Driver v2"
+wirescript to-netlist circuit.db.csv
+```
+
+### `from-netlist` — SPICE netlist → DB JSON
+
+```sh
+wirescript from-netlist <input.net> [--out file.json] [--name "..."]
+```
+
+```sh
+wirescript from-netlist circuit.net
+wirescript from-netlist circuit.net --out circuit.json --name "My Circuit"
+```
+
+### `to-db` — Herhangi bir format → DB (JSON veya CSV)
+
+```sh
+wirescript to-db <input> [--format json|csv] [--out file]
+```
+
+```sh
+wirescript to-db circuit.ws --format csv --out circuit.db.csv
+wirescript to-db circuit.net --format json
+```
+
+### `compile` — `.ts`/`.ws` → DB JSON *(legacy/tanıdık isim)*
+
+```sh
+wirescript compile <input.ts|input.ws> [--out file.json]
+```
+
+```sh
+wirescript compile my-circuit.ts --out circuit.json
+wirescript compile circuit.ws --out circuit.json
+```
+
+`.ts` giriş dosyası default olarak bir `Schematic` export etmeli:
 
 ```ts
 // my-circuit.ts
@@ -31,144 +153,87 @@ import { Circuit, DC, R, LED, GND, RED } from '@ssevindikx/wirescript';
 export default Circuit('LED Driver', DC(5), R(330), LED(RED), GND());
 ```
 
-**Options:**
+### `decompile` — DB JSON/CSV → `.ws` veya `.ts` *(legacy/tanıdık isim)*
 
-| Flag | Description |
-|---|---|
-| `--export <name>` | Named export to use (default: `default`) |
-| `--out <file>` | Write output to file instead of stdout |
-
----
-
-### `decompile` / `db2dsl` — DB JSON → DSL code
-
-Converts a `WireScriptDb` JSON file back to DSL or TypeScript code.
+```sh
+wirescript decompile <input.json> [--format ws|ts] [--out file]
+```
 
 ```sh
 wirescript decompile circuit.json
-wirescript decompile circuit.json --format ts
-wirescript decompile circuit.json --format dsl --out circuit.dsl.js
+wirescript decompile circuit.json --format ts --out circuit.ts
+wirescript decompile circuit.json --format ws --out circuit.ws
 ```
-
-**Options:**
-
-| Flag | Default | Description |
-|---|---|---|
-| `--format` | `dsl` | Output format: `dsl` or `ts` |
-| `--import` | `@ssevindikx/wirescript` | Module import path (for `ts` format) |
-| `--export` | `default` | Export name (for `ts` format) |
-| `--out` | stdout | Write output to file |
 
 ---
 
-### `to-netlist` / `netlist` — DB/DSL → Netlist
+## Pipeline Örnekleri
 
-Converts a DB JSON file **or** a DSL/TS module directly to a netlist.
+CLI tüm komutlar stdin/stdout üzerinden birleştirilebilir:
 
 ```sh
-# From DB JSON
-wirescript to-netlist circuit.json
-wirescript to-netlist circuit.json --format ws-csv --out circuit.csv
+# .ws → netlist (tek satır)
+wirescript convert circuit.ws --to netlist --out circuit.net
 
-# From DSL/TS directly (skips intermediate JSON step)
-wirescript to-netlist circuit.ts --format spice --out circuit.net
-```
+# .ts → .ws (compile + decompile)
+wirescript compile my-circuit.ts | wirescript decompile /dev/stdin --format ws
 
-**Options:**
+# netlist → .ws (net → DB → ws)
+wirescript from-netlist circuit.net | wirescript to-ws /dev/stdin --out circuit.ws
 
-| Flag | Default | Description |
-|---|---|---|
-| `--format` | `spice` | Netlist format: `spice` or `ws-csv` |
-| `--title` | schematic name | Title comment in SPICE output |
-| `--out` | stdout | Write output to file |
-| `--export` | `default` | Named export (for DSL/TS input) |
+# Tam döngü: .ws → netlist → DB → .ws
+wirescript convert circuit.ws --to netlist \
+  | wirescript convert /dev/stdin --from netlist --to ws
 
-**Example SPICE output:**
-```spice
-* LED Driver
-* Generated by WireScript db2netlist
-
-V1 N1 0 5
-R1 N1 N2 330
-D1 N2 0 red
-
-* Ground nets: 0
-
-.end
+# .ts → DB CSV
+wirescript compile my-circuit.ts \
+  | wirescript to-db /dev/stdin --format csv --out circuit.db.csv
 ```
 
 ---
 
-### `from-netlist` / `import-netlist` — Netlist → DB JSON
+## Tüm Komutlar — Özet Tablosu
 
-Parses a netlist file and outputs a `WireScriptDb` JSON.
-
-```sh
-wirescript from-netlist circuit.net
-wirescript from-netlist circuit.net --out circuit.json
-wirescript from-netlist circuit.csv --format ws-csv --name "My Circuit"
-```
-
-Format is **auto-detected** from the file content (CSV header → `ws-csv`, otherwise `spice`).
-
-**Options:**
-
-| Flag | Default | Description |
-|---|---|---|
-| `--format` | auto-detect | Input format: `spice` or `ws-csv` |
-| `--name` | parsed from file | Schematic name in the output DB |
-| `--out` | stdout | Write output to file |
-
----
-
-## Piping and pipelines
-
-The CLI is designed for pipeline use. All commands read from files and write to stdout (unless `--out` is set), making them composable:
-
-```sh
-# DSL → JSON (compile)
-wirescript compile circuit.ts > circuit.json
-
-# JSON → SPICE (export netlist)
-wirescript to-netlist circuit.json > circuit.net
-
-# Full pipeline: DSL → JSON → SPICE
-wirescript compile circuit.ts | wirescript to-netlist /dev/stdin --format spice
-
-# Round-trip: DSL → JSON → TypeScript
-wirescript compile circuit.ts | wirescript decompile /dev/stdin --format ts
-
-# Round-trip: DSL → netlist → DB → DSL
-wirescript compile circuit.ts \
-  | wirescript to-netlist /dev/stdin \
-  | wirescript from-netlist /dev/stdin \
-  | wirescript decompile /dev/stdin --format ts
-```
-
----
-
-## All commands at a glance
-
-| Command | Alias | Input | Output |
+| Komut | Alias | Giriş | Çıkış |
 |---|---|---|---|
-| `compile` | `dsl2db` | DSL/TS | DB JSON |
-| `decompile` | `db2dsl` | DB JSON | DSL / TS code |
-| `to-netlist` | `netlist` | DB JSON or DSL/TS | SPICE or CSV netlist |
-| `from-netlist` | `import-netlist` | SPICE or CSV netlist | DB JSON |
+| `convert --to ws` | `to-ws` | herhangi | `.ws` |
+| `convert --to netlist` | `to-netlist` | herhangi | `.net` |
+| `convert --to db` | `to-db` | herhangi | `.json` |
+| `convert --to db-csv` | — | herhangi | `.csv` |
+| `convert --to ts` | — | herhangi | `.ts` |
+| `compile` | `dsl2db` | `.ts`/`.ws` | `.json` |
+| `decompile` | `db2dsl` | `.json`/`.csv` | `.ws`/`.ts` |
+| `from-ws` | — | `.ws` | `.json` |
+| `from-netlist` | `import-netlist` | `.net` | `.json` |
 
 ---
 
-## Programmatic usage
+## Programmatic Kullanım
 
-All CLI functions are available as a library:
+Tüm CLI fonksiyonları library olarak da kullanılabilir:
 
 ```ts
 import {
-  compileDslToDb,
+  // DB omurgası
+  compileDslToDb, serializeDb, deserializeDb,
+
+  // WireScript DSL (.ws)
+  exportWs, importWs,
+
+  // SPICE Netlist
+  exportNetlist, importNetlist,
+
+  // DB → DSL kod
   reverseDbToDsl,
-  exportNetlist,
-  importNetlist,
 } from '@ssevindikx/wirescript';
+
+// Örnek: .ws → SPICE (API üzerinden)
+const db = importWs(wsSource);         // ws → DB
+const spice = exportNetlist(db);        // DB → netlist
+
+// Örnek: DB kaydet/yükle
+const csv = serializeDb(db, { format: 'csv' });    // DB → CSV
+const db2 = deserializeDb(csv);                     // CSV → DB (otomatik algılar)
 ```
 
-See [Serialization](./serialization.md) and [Netlist](./netlist.md) for full API details.
+Tüm dönüşüm detayları için [IO & Formats](./io.md) ve [Serialization](./serialization.md).

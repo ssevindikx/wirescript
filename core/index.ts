@@ -67,12 +67,32 @@ export {
   dbToDsl,
   dsl2db,
   db2dsl,
+  // DB storage serialization (JSON / CSV)
+  serializeDb,
+  deserializeDb,
+  serializeDbCsv,
+  deserializeDbCsv,
   type WireScriptDb,
   type DbComponent,
   type DbNode,
   type DbPin,
   type DbToDslOptions,
+  type DbStorageFormat,
+  type DbSerializeOptions,
+  type DbDeserializeOptions,
 } from './db';
+
+// WireScript DSL (.ws) import / export
+export {
+  exportWs,
+  importWs,
+  dbToWs,
+  wsToDb,
+  db2ws,
+  ws2db,
+  type WsExportOptions,
+  type WsImportOptions,
+} from './ws';
 
 // Netlist import / export
 export {
